@@ -1,0 +1,6 @@
+{
+   "title": "esdoc-plugin-jspm",
+   "source": "src",
+   "destination": "docs",
+   "manual": { "changelog": ["./CHANGELOG.md"] }
+}
