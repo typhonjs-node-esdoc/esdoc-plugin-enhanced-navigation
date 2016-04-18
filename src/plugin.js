@@ -4,15 +4,17 @@
 
 'use strict';
 
-// import cheerio             from 'cheerio';
-// import fs                  from 'fs-extra';
-// import path                from 'path';
-// import { taffy }           from 'taffydb';
+import cheerio                from 'cheerio';
+import fs                     from 'fs-extra';
+import path                   from 'path';
+import { taffy }              from 'taffydb';
 
-// let option, silent;
+import EnhancedNavDocBuilder  from './EnhancedNavDocBuilder.js';
+
+let option, silent;
 
 // Must store ESDoc configuration file to use later with EnhancedNavDocBuilder.
-// let config, navHTML;
+let config, navHTML;
 
 // ESDoc plugin callbacks -------------------------------------------------------------------------------------------
 
@@ -21,23 +23,22 @@
  *
  * @param {object}   ev - Event from ESDoc containing data field.
  */
-// export function onStart(ev)
-// {
-//   option = ev.data.option || {};
-//   silent = option.silent || false;
-// }
+export function onStart(ev)
+{
+   option = ev.data.option || {};
+   silent = option.silent || false;
+}
 
 /**
  * Stores ESDoc configuration file.
  *
  * @param {object}   ev - Event from ESDoc containing data field.
  */
-// export function onHandleConfig(ev)
-// {
-//   config = ev.data.config;
-
-//   s_COPY_FILES(config.destination);
-// }
+export function onHandleConfig(ev)
+{
+   config = ev.data.config;
+   s_COPY_FILES(config.destination);
+}
 
 /**
  * Since the source root is "." / the base root of the repo ESDoc currently creates the wrong import path, so they
@@ -47,10 +48,10 @@
  *
  * @param {object}   ev - Event from ESDoc containing data field
  */
-// export function onHandleTag(ev)
-// {
-//   navHTML = new EnhancedNavDocBuilder(taffy(ev.data.tag), config).buildNavDoc();
-// }
+export function onHandleTag(ev)
+{
+   navHTML = new EnhancedNavDocBuilder(taffy(ev.data.tag), config).buildNavDoc();
+}
 
 /**
  * The generated HTML also includes the full JSPM path, so various RegExp substitutions are run to transform the
@@ -58,9 +59,24 @@
  *
  * @param {object}   ev - Event from ESDoc containing data field
  */
-// export function onHandleHTML(ev)
-// {
-// }
+export function onHandleHTML(ev)
+{
+   if (ev.data.fileName.endsWith('.html'))
+   {
+      const $ = cheerio.load(ev.data.html, { decodeEntities: false });
+
+      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/nav-accordion-style.css"/>');
+      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/esdoc-nav-style.css"/>');
+      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/extra-style.css"/>');
+
+//      $('head').append('  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>\n');
+
+      // Replace standard navigation with JSPM navigation.
+      if ($('.navigation').data('ice') === 'nav') { $('.navigation').html(navHTML); }
+
+      ev.data.html = $.html();
+   }
+}
 
 // Utility functions ------------------------------------------------------------------------------------------------
 
@@ -69,9 +85,11 @@
  *
  * @param {string}   docDestination - ESDoc config destination relative to root path.
  */
-// const s_COPY_FILES = (docDestination) =>
-// {
-//   const sourcePath = path.resolve(__dirname, '../template/copy');
-//   const targetPath = path.resolve(process.cwd(), docDestination);
-//   fs.copySync(sourcePath, targetPath);
-// };
+const s_COPY_FILES = (docDestination) =>
+{
+   const sourcePath = path.resolve(__dirname, '../template/copy');
+   const targetPath = path.resolve(process.cwd(), docDestination);
+console
+
+   fs.copySync(sourcePath, targetPath);
+};
