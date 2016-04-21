@@ -60,24 +60,6 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       let lastDirPath = '.';
 
-
-      /*
-       <ul class="nav-accordion-menu animated">
-       <li data-ice="navGroup" class="has-children">
-       <span data-ice="groupInput"></span> <!-- <input type="checkbox" name="" id="" checked><label for="" class="nav-header"></label> -->
-       <ul>
-       <li data-ice="navFolder" class="has-children">
-       <span data-ice="folderInput"></span> <!--<input type="checkbox" name="" id=""><label for="" data-ice="dirPath" class="nav-dir-path"></label> -->
-       <ul>
-       <li data-ice="doc" class=""><span data-ice="docLink"></span></li> <!-- <a href=""></a> -->
-       </ul>
-       </li>
-       </ul>
-       </li>
-       </ul>
-
-       <!-- <a href=""></a> -->
-       */
       const localData =
       [
          {
@@ -412,7 +394,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
    _buildPackageHTML(cntr, packageData)
    {
-      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${packageData.checked ? ' checked' : ''}><label for="package-${cntr}" data-ice="dirPath" class="nav-dir-path">${packageData.name}</label>`;
+      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${packageData.checked ? ' checked' : ''}><label for="package-${cntr}" data-ice="dirPath" class="nav-package">${packageData.name}</label>`;
    }
 
    /**
@@ -421,52 +403,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
     * @return {string} HTML navigation output.
     * @private
     */
-   buildNavDocOld()
+   buildNavDocTest()
    {
       const html = this._readTemplate('testnav.html');
       const ice = new IceCap(html);
-
-      //const kinds = ['class', 'function', 'variable', 'typedef', 'external'];
-      //const allDocs = this._find({ kind: kinds }).filter((v) => !v.builtinExternal);
-      //const kindOrder = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
-      //
-      //allDocs.sort((a, b) =>
-      //{
-      //   const filePathA = a.longname.split('~')[0].replace('src/', '');
-      //   const filePathB = b.longname.split('~')[0].replace('src/', '');
-      //   const dirPathA = path.dirname(filePathA);
-      //   const dirPathB = path.dirname(filePathB);
-      //   const kindA = a.interface ? 'interface' : a.kind;
-      //   const kindB = b.interface ? 'interface' : b.kind;
-      //
-      //   if (dirPathA === dirPathB)
-      //   {
-      //      if (kindA === kindB) { return a.longname > b.longname ? 1 : -1; }
-      //      else { return kindOrder[kindA] > kindOrder[kindB] ? 1 : -1; }
-      //   }
-      //   else
-      //   {
-      //      return dirPathA > dirPathB ? 1 : -1;
-      //   }
-      //});
-      //
-      //let lastDirPath = '.';
-      //
-      //ice.loop('doc', allDocs, (i, doc, ice) =>
-      //{
-      //   const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-      //   const dirPath = path.dirname(filePath);
-      //   const kind = doc.interface ? 'interface' : doc.kind;
-      //   const kindText = kind.charAt(0).toUpperCase();
-      //   const kindClass = `kind-${kind}`;
-      //
-      //   ice.load('name', this._buildDocLinkHTML(doc.longname));
-      //   ice.load('kind', kindText);
-      //   ice.attr('kind', 'class', kindClass);
-      //   ice.text('dirPath', dirPath);
-      //   ice.drop('dirPath', lastDirPath === dirPath);
-      //   lastDirPath = dirPath;
-      //});
 
       return ice.html;
    }
