@@ -22,6 +22,36 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       super(data, config);
    }
 
+
+   _buildDocLinkHTML(doc)
+   {
+      const link = doc.scmLink ? ` data-scm-link=${doc.scmLink}` : '';
+      const type = doc.scmType ? ` data-scm-type=${doc.scmType}` : '';
+      return `<a href="${doc.link}"${link}${type}>${doc.name}</a>`;
+   }
+
+   _buildFolderHTML(cntr, folder)
+   {
+      const link = folder.scmLink ? ` data-scm-link=${folder.scmLink}` : '';
+      const type = folder.scmType ? ` data-scm-type=${folder.scmType}` : '';
+      return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}>`
+       + `<label for="folder-${cntr}" class="nav-dir-path" data-ice="dirPath"${link}${type}>${folder.path}</label>`;
+   }
+
+   _buildGroupHTML(cntr, group)
+   {
+      return `<input type="checkbox" name="group-${cntr}" id="group-${cntr}"${group.checked ? ' checked' : ''}>`
+       + `<label for="group-${cntr}" class="nav-header">${group.name}</label>`;
+   }
+
+   _buildPackageHTML(cntr, data)
+   {
+      const link = data.scmLink ? ` data-scm-link=${data.scmLink}` : '';
+      const type = data.scmType ? ` data-scm-type=${data.scmType}` : '';
+      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
+       + `<label for="package-${cntr}" class="nav-package" data-ice="dirPath"${link}${type}>${data.name}</label>`;
+   }
+
    /**
     * Build navigation output.
     *
@@ -38,18 +68,21 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       const allDocs = this._find({ kind: kinds }).filter((v) => !v.builtinExternal);
       const kindOrder = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
 
+      // Sort by directory and kind.
       allDocs.sort((a, b) =>
       {
-         const filePathA = a.longname.split('~')[0].replace('src/', '');
-         const filePathB = b.longname.split('~')[0].replace('src/', '');
+         const filePathA = a.longname.split('~')[0];
+         const filePathB = b.longname.split('~')[0];
          const dirPathA = path.dirname(filePathA);
          const dirPathB = path.dirname(filePathB);
+         const shortNameA = a.longname.split('~')[1];
+         const shortNameB = b.longname.split('~')[1];
          const kindA = a.interface ? 'interface' : a.kind;
          const kindB = b.interface ? 'interface' : b.kind;
 
          if (dirPathA === dirPathB)
          {
-            if (kindA === kindB) { return a.longname > b.longname ? 1 : -1; }
+            if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
             else { return kindOrder[kindA] > kindOrder[kindB] ? 1 : -1; }
          }
          else
@@ -58,7 +91,86 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          }
       });
 
+      // Filter JSPM packages
+      const jspmDocs = allDocs.filter((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         return filePath.startsWith('jspm_packages');
+      });
+
+      // Filter local docs
+      const localDocs = allDocs.filter((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         return !(filePath.startsWith('jspm_packages') || filePath.startsWith('node_modules'));
+      });
+
+      // Filter NPM packages
+      const npmDocs = allDocs.filter((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         return filePath.startsWith('node_modules');
+      });
+
+      jspmDocs.forEach((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         const dirPath = path.dirname(filePath);
+         const shortName = doc.longname.split('~')[1];
+         const kind = doc.interface ? 'interface' : doc.kind;
+
+         console.log('!! buildNavDoc - JSPM docs ---------------------------------------------');
+         console.log('!! buildNavDoc - filepath: ' + filePath);
+         console.log('!! buildNavDoc - dirPath: ' + dirPath);
+         console.log('!! buildNavDoc - shortName: ' + shortName);
+         console.log('!! buildNavDoc - kind: ' + kind);
+      });
+
+      localDocs.forEach((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         const dirPath = path.dirname(filePath);
+         const shortName = doc.longname.split('~')[1];
+         const kind = doc.interface ? 'interface' : doc.kind;
+
+         console.log('!! buildNavDoc - LOCAL docs --------------------------------------------');
+         console.log('!! buildNavDoc - filepath: ' + filePath);
+         console.log('!! buildNavDoc - dirPath: ' + dirPath);
+         console.log('!! buildNavDoc - shortName: ' + shortName);
+         console.log('!! buildNavDoc - kind: ' + kind);
+      });
+
+      npmDocs.forEach((doc) =>
+      {
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         const dirPath = path.dirname(filePath);
+         const shortName = doc.longname.split('~')[1];
+         const kind = doc.interface ? 'interface' : doc.kind;
+
+         console.log('!! buildNavDoc NPM docs -----------------------------------------------');
+         console.log('!! buildNavDoc - filepath: ' + filePath);
+         console.log('!! buildNavDoc - dirPath: ' + dirPath);
+         console.log('!! buildNavDoc - shortName: ' + shortName);
+         console.log('!! buildNavDoc - kind: ' + kind);
+      });
+
       let lastDirPath = '.';
+
+      //ice.loop('doc', allDocs, (i, doc, ice) =>
+      //{
+      //   const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+      //   const dirPath = path.dirname(filePath);
+      //   const kind = doc.interface ? 'interface' : doc.kind;
+      //   const kindText = kind.charAt(0).toUpperCase();
+      //   const kindClass = `kind-${kind}`;
+      //
+      //   ice.load('name', this._buildDocLinkHTML(doc.longname));
+      //   ice.load('kind', kindText);
+      //   ice.attr('kind', 'class', kindClass);
+      //   ice.text('dirPath', dirPath);
+      //   ice.drop('dirPath', lastDirPath === dirPath);
+      //   lastDirPath = dirPath;
+      //});
 
       const localData =
       [
@@ -396,52 +508,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       iceNav.load('navData', iceNavLocal);
       iceNav.load('navData', iceNavManaged);
 
-      //ice.loop('doc', allDocs, (i, doc, ice) =>
-      //{
-      //   const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-      //   const dirPath = path.dirname(filePath);
-      //   const kind = doc.interface ? 'interface' : doc.kind;
-      //   const kindText = kind.charAt(0).toUpperCase();
-      //   const kindClass = `kind-${kind}`;
-      //
-      //   ice.load('name', this._buildDocLinkHTML(doc.longname));
-      //   ice.load('kind', kindText);
-      //   ice.attr('kind', 'class', kindClass);
-      //   ice.text('dirPath', dirPath);
-      //   ice.drop('dirPath', lastDirPath === dirPath);
-      //   lastDirPath = dirPath;
-      //});
-
       return iceNav.html;
-   }
-
-   _buildDocLinkHTML(doc)
-   {
-      const link = doc.scmLink ? ` data-scm-link=${doc.scmLink}` : '';
-      const type = doc.scmType ? ` data-scm-type=${doc.scmType}` : '';
-      return `<a href="${doc.link}"${link}${type}>${doc.name}</a>`;
-   }
-
-   _buildFolderHTML(cntr, folder)
-   {
-      const link = folder.scmLink ? ` data-scm-link=${folder.scmLink}` : '';
-      const type = folder.scmType ? ` data-scm-type=${folder.scmType}` : '';
-      return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}>`
-       + `<label for="folder-${cntr}" class="nav-dir-path" data-ice="dirPath"${link}${type}>${folder.path}</label>`;
-   }
-
-   _buildGroupHTML(cntr, group)
-   {
-      return `<input type="checkbox" name="group-${cntr}" id="group-${cntr}"${group.checked ? ' checked' : ''}>`
-       + `<label for="group-${cntr}" class="nav-header">${group.name}</label>`;
-   }
-
-   _buildPackageHTML(cntr, data)
-   {
-      const link = data.scmLink ? ` data-scm-link=${data.scmLink}` : '';
-      const type = data.scmType ? ` data-scm-type=${data.scmType}` : '';
-      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
-       + `<label for="package-${cntr}" class="nav-package" data-ice="dirPath"${link}${type}>${data.name}</label>`;
    }
 
    /**
