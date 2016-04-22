@@ -20,8 +20,26 @@
   "dependencies": {
   },
   "devDependencies": {
+    "jspm": "^0.16.0",
     "typhonjs-config-eslint": "^0.4.0",
     "typhonjs-npm-build-test": "^0.1.0"
+  },
+  "jspm": {
+    "directories": {},
+    "dependencies": {
+      "backbone": "github:typhonjs-backbone-parse/backbone-parse-es6@master",
+      "underscore": "npm:underscore@^1.8.3"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.35",
+      "babel-runtime": "npm:babel-runtime@^5.8.35",
+      "core-js": "npm:core-js@^1.2.6"
+    }
+  },
+  "typhonjs": {
+    "scm": {
+      "autoInstallJSPM": false
+    }
   },
   "engines": {
     "npm": ">=3.x"
