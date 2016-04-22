@@ -85,7 +85,7 @@
 
 .nav-accordion-menu label::before, .nav-accordion-menu label::after
 {
-   background-image: url(../image/nav-accordion-icons.svg);
+   background-image: url(../../image/navigation/nav-accordion-icons.svg);
    background-repeat: no-repeat;
 }
 

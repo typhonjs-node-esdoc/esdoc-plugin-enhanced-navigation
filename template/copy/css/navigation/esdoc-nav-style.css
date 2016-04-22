@@ -68,30 +68,30 @@ li.mdl-menu__item:hover
 
 .navigation .nav-kind-class a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat 0 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat 0 0;
 }
 
 .navigation .nav-kind-interface a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat -16px 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -16px 0;
 }
 
 .navigation .nav-kind-function a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat -32px 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -32px 0;
 }
 
 .navigation .nav-kind-variable a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat -48px 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -48px 0;
 }
 
 .navigation .nav-kind-typedef a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat -64px 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -64px 0;
 }
 
 .navigation .nav-kind-external a::after
 {
-   background: url(../image/esdoc-nav-icons.svg) no-repeat -80px 0;
+   background: url(../../image/navigation/esdoc-nav-icons.svg) no-repeat -80px 0;
 }

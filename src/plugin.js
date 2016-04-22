@@ -68,19 +68,24 @@ export function onHandleHTML(ev)
       // Replace standard navigation with enhanced navigation.
       if ($('.navigation').data('ice') === 'nav' && $('.navigation').find('li[data-ice="doc"]').length > 0)
       {
-         $('<link type="text/css" rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">'
-          + '\n  ').insertBefore($('head link').eq(0));
+         $('<link type="text/css" rel="stylesheet" href="css/mdl/material.min.css">\n  ').insertBefore(
+          $('head link').eq(0));
 
-         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/nav-accordion-style.css"/>');
-         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/esdoc-nav-style.css"/>');
-         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/extra-style.css"/>');
+         $('head link').eq(1).append(
+          '\n  <link type="text/css" rel="stylesheet" href="css/navigation/nav-accordion-style.css"/>');
+
+         $('head link').eq(1).append(
+          '\n  <link type="text/css" rel="stylesheet" href="css/navigation/esdoc-nav-style.css"/>');
+
+         $('head link').eq(1).append(
+          '\n  <link type="text/css" rel="stylesheet" href="css/navigation/extra-style.css"/>');
 
          $('body').prepend(s_CONTEXT_POPUP);
 
-         $('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>\n').insertBefore(
+         $('<script src="script/jquery/jquery.min.js"></script>\n').insertBefore(
           $('body script').eq(0));
 
-         $('<script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>\n').insertBefore(
+         $('<script defer src="script/mdl/material.min.js"></script>\n').insertBefore(
           $('body script').eq(1));
 
          $('<script src="script/navigation/enhancednav.js"></script>\n').insertBefore($('body script').eq(1));
@@ -94,6 +99,9 @@ export function onHandleHTML(ev)
 
 // Utility functions ------------------------------------------------------------------------------------------------
 
+/**
+ * Defines the MDL context popup used for linking source to the respective SCM.
+ */
 const s_CONTEXT_POPUP =
 `
 <div id="contextpopup">
