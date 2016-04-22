@@ -65,20 +65,47 @@ export function onHandleHTML(ev)
    {
       const $ = cheerio.load(ev.data.html, { decodeEntities: false });
 
-      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/nav-accordion-style.css"/>');
-      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/esdoc-nav-style.css"/>');
-      $('head link').eq(0).append('\n  <link type="text/css" rel="stylesheet" href="css/extra-style.css"/>');
+      // Replace standard navigation with enhanced navigation.
+      if ($('.navigation').data('ice') === 'nav' && $('.navigation').find('li[data-ice="doc"]').length > 0)
+      {
+         $('<link type="text/css" rel="stylesheet" href="https://code.getmdl.io/1.1.3/material.indigo-pink.min.css">'
+          + '\n  ').insertBefore($('head link').eq(0));
 
-//      $('head').append('  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>\n');
+         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/nav-accordion-style.css"/>');
+         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/esdoc-nav-style.css"/>');
+         $('head link').eq(1).append('\n  <link type="text/css" rel="stylesheet" href="css/extra-style.css"/>');
 
-      // Replace standard navigation with JSPM navigation.
-      if ($('.navigation').data('ice') === 'nav') { $('.navigation').html(navHTML); }
+         $('body').prepend(s_CONTEXT_POPUP);
+
+         $('<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.3/jquery.min.js"></script>\n').insertBefore(
+          $('body script').eq(0));
+
+         $('<script defer src="https://code.getmdl.io/1.1.3/material.min.js"></script>\n').insertBefore(
+          $('body script').eq(1));
+
+         $('<script src="script/navigation/enhancednav.js"></script>\n').insertBefore($('body script').eq(1));
+
+         $('.navigation').html(navHTML);
+      }
 
       ev.data.html = $.html();
    }
 }
 
 // Utility functions ------------------------------------------------------------------------------------------------
+
+const s_CONTEXT_POPUP =
+`
+<div id="contextpopup">
+   <button id="context-menu" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect hidden">
+      <i class="material-icons">more_vert</i>
+   </button>
+
+   <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="context-menu">
+      <li class="mdl-menu__item" data-action="openSCMLink">Open on ...</li>
+   </ul>
+</div>
+`;
 
 /**
  * Copies additional files to the doc destination.
@@ -89,7 +116,6 @@ const s_COPY_FILES = (docDestination) =>
 {
    const sourcePath = path.resolve(__dirname, '../template/copy');
    const targetPath = path.resolve(process.cwd(), docDestination);
-console
 
    fs.copySync(sourcePath, targetPath);
 };

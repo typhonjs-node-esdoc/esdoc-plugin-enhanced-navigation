@@ -70,40 +70,46 @@ export default class EnhancedNavDocBuilder extends DocBuilder
                {
                   checked: true,
                   path: 'src',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'Github',
                   docs:
                   [
-                     { type: 'nav-kind-class', name: 'Class', link: '#' },
-                     { type: 'nav-kind-interface', name: 'Interface', link: '#' },
-                     { type: 'nav-kind-function', name: 'Function', link: '#' },
-                     { type: 'nav-kind-variable', name: 'Variable', link: '#' },
-                     { type: 'nav-kind-typedef', name: 'Typedef', link: '#' },
-                     { type: 'nav-kind-external', name: 'External', link: '#' }
+                     { type: 'nav-kind-class', name: 'Class', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-interface', name: 'Interface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-function', name: 'Function', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-variable', name: 'Variable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-typedef', name: 'Typedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-external', name: 'External', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                   ]
                },
                {
                   checked: true,
                   path: 'src1',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'Github',
                   docs:
                   [
-                     { type: 'nav-kind-class', name: 'Class', link: '#' },
-                     { type: 'nav-kind-interface', name: 'Interface', link: '#' },
-                     { type: 'nav-kind-function', name: 'Function', link: '#' },
-                     { type: 'nav-kind-variable', name: 'Variable', link: '#' },
-                     { type: 'nav-kind-typedef', name: 'Typedef', link: '#' },
-                     { type: 'nav-kind-external', name: 'External', link: '#' }
+                     { type: 'nav-kind-class', name: 'Class', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-interface', name: 'Interface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-function', name: 'Function', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-variable', name: 'Variable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-typedef', name: 'Typedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-external', name: 'External', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                   ]
                },
                {
                   checked: true,
                   path: 'src2',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'Github',
                   docs:
                   [
-                     { type: 'nav-kind-class', name: 'Class', link: '#' },
-                     { type: 'nav-kind-interface', name: 'Interface', link: '#' },
-                     { type: 'nav-kind-function', name: 'Function', link: '#' },
-                     { type: 'nav-kind-variable', name: 'Variable', link: '#' },
-                     { type: 'nav-kind-typedef', name: 'Typedef', link: '#' },
-                     { type: 'nav-kind-external', name: 'External', link: '#' }
+                     { type: 'nav-kind-class', name: 'Class', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-interface', name: 'Interface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-function', name: 'Function', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-variable', name: 'Variable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-typedef', name: 'Typedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                     { type: 'nav-kind-external', name: 'External', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                   ]
                }
             ]
@@ -121,45 +127,53 @@ export default class EnhancedNavDocBuilder extends DocBuilder
                {
                   checked: false,
                   name: 'jspm-package1',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'Github',
                   folders:
                   [
                      {
                         checked: false,
                         path: 'jspm-src',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'jspm-src1',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'jspm-src2',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      }
                   ]
@@ -167,45 +181,53 @@ export default class EnhancedNavDocBuilder extends DocBuilder
                {
                   checked: false,
                   name: 'jspm-package2',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'Github',
                   folders:
                   [
                      {
                         checked: false,
                         path: 'jspm-src',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'jspm-src1',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'jspm-src2',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'Github',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'JSPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'JSPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'JSPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'JSPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-interface', name: 'JSPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-function', name: 'JSPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-variable', name: 'JSPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-typedef', name: 'JSPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' },
+                           { type: 'nav-kind-external', name: 'JSPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'Github' }
                         ]
                      }
                   ]
@@ -221,45 +243,53 @@ export default class EnhancedNavDocBuilder extends DocBuilder
                {
                   checked: false,
                   name: 'npm-package1',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'NPM',
                   folders:
                   [
                      {
                         checked: false,
                         path: 'npm-src',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'npm-src1',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'npm-src2',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      }
                   ]
@@ -267,45 +297,53 @@ export default class EnhancedNavDocBuilder extends DocBuilder
                {
                   checked: false,
                   name: 'npm-package2',
+                  scmLink: 'https://github.com/typhonrt',
+                  scmType: 'NPM',
                   folders:
                   [
                      {
                         checked: false,
                         path: 'npm-src',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'npm-src1',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      },
                      {
                         checked: false,
                         path: 'npm-src2',
+                        scmLink: 'https://github.com/typhonrt',
+                        scmType: 'NPM',
                         docs:
                         [
-                           { type: 'nav-kind-class', name: 'NPMClass', link: '#' },
-                           { type: 'nav-kind-interface', name: 'NPMInterface', link: '#' },
-                           { type: 'nav-kind-function', name: 'NPMFunction', link: '#' },
-                           { type: 'nav-kind-variable', name: 'NPMVariable', link: '#' },
-                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: '#' },
-                           { type: 'nav-kind-external', name: 'NPMExternal', link: '#' }
+                           { type: 'nav-kind-class', name: 'NPMClass', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-interface', name: 'NPMInterface', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-function', name: 'NPMFunction', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-variable', name: 'NPMVariable', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-typedef', name: 'NPMTypedef', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' },
+                           { type: 'nav-kind-external', name: 'NPMExternal', link: 'https://github.com/typhonrt', scmLink: 'https://github.com/typhonrt', scmType: 'NPM' }
                         ]
                      }
                   ]
@@ -379,36 +417,31 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
    _buildDocLinkHTML(doc)
    {
-      return `<a href="${doc.link}">${doc.name}</a>`;
+      const link = doc.scmLink ? ` data-scm-link=${doc.scmLink}` : '';
+      const type = doc.scmType ? ` data-scm-type=${doc.scmType}` : '';
+      return `<a href="${doc.link}"${link}${type}>${doc.name}</a>`;
    }
 
    _buildFolderHTML(cntr, folder)
    {
-      return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}><label for="folder-${cntr}" data-ice="dirPath" class="nav-dir-path">${folder.path}</label>`;
+      const link = folder.scmLink ? ` data-scm-link=${folder.scmLink}` : '';
+      const type = folder.scmType ? ` data-scm-type=${folder.scmType}` : '';
+      return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}>`
+       + `<label for="folder-${cntr}" class="nav-dir-path" data-ice="dirPath"${link}${type}>${folder.path}</label>`;
    }
 
    _buildGroupHTML(cntr, group)
    {
-      return `<input type="checkbox" name="group-${cntr}" id="group-${cntr}"${group.checked ? ' checked' : ''}><label for="group-${cntr}" class="nav-header">${group.name}</label>`;
+      return `<input type="checkbox" name="group-${cntr}" id="group-${cntr}"${group.checked ? ' checked' : ''}>`
+       + `<label for="group-${cntr}" class="nav-header">${group.name}</label>`;
    }
 
-   _buildPackageHTML(cntr, packageData)
+   _buildPackageHTML(cntr, data)
    {
-      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${packageData.checked ? ' checked' : ''}><label for="package-${cntr}" data-ice="dirPath" class="nav-package">${packageData.name}</label>`;
-   }
-
-   /**
-    * Build navigation output.
-    *
-    * @return {string} HTML navigation output.
-    * @private
-    */
-   buildNavDocTest()
-   {
-      const html = this._readTemplate('testnav.html');
-      const ice = new IceCap(html);
-
-      return ice.html;
+      const link = data.scmLink ? ` data-scm-link=${data.scmLink}` : '';
+      const type = data.scmType ? ` data-scm-type=${data.scmType}` : '';
+      return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
+       + `<label for="package-${cntr}" class="nav-package" data-ice="dirPath"${link}${type}>${data.name}</label>`;
    }
 
    /**
