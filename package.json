@@ -17,8 +17,7 @@
       "email": "support@js.typhonrt.org"
     }
   ],
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "jspm": "^0.16.0",
     "typhonjs-config-eslint": "^0.4.0",
