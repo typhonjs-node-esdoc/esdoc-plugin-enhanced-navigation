@@ -78,7 +78,7 @@ export function onHandleHTML(ev)
           '\n  <link type="text/css" rel="stylesheet" href="css/navigation/esdoc-nav-style.css"/>');
 
          $('head link').eq(1).append(
-          '\n  <link type="text/css" rel="stylesheet" href="css/navigation/extra-style.css"/>');
+          '\n  <link type="text/css" rel="stylesheet" href="css/scrollbar/extra-style.css"/>');
 
          $('body').prepend(s_CONTEXT_POPUP);
 

@@ -10,7 +10,7 @@
 
 ::-webkit-scrollbar-thumb
 {
-   background: -webkit-linear-gradient(left, rgba(225,225,225,0.9) 0%,rgba(240,240,240,0.9) 100%) !important;
+   background: -webkit-linear-gradient(left, rgba(32,90,112,0.4) 0%,rgba(32,90,112,0.4) 100%) !important;
    background-clip: padding-box !important;
    border: 2px solid transparent !important;
    border-image: initial !important;
@@ -25,7 +25,7 @@
 
 ::-webkit-scrollbar-thumb:hover
 {
-   background: -webkit-linear-gradient(left, rgba(235,235,235,0.9) 0%,rgba(250,250,250,0.9) 100%) !important;
+   background: -webkit-linear-gradient(left, rgba(32,90,112,0.25) 0%,rgba(32,90,112,0.25) 100%) !important;
    background-clip: padding-box !important;
 
    -moz-border-radius: 5px !important;    /* Firefox 3.6-, removed in Firefox 13 */
