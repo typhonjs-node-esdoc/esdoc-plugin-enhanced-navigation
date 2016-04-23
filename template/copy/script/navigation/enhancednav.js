@@ -64,16 +64,42 @@
       var scmLink = target.data('scm-link');
       var scmType = target.data('scm-type') || '...';
 
+      var packageLink = target.data('package-link');
+      var packageType = target.data('package-type') || '...';
+
       var popupmenu = $('#contextpopup .mdl-menu__container');
 
       // Populate data for the context menu.
-      popupmenu.find('li').each(function( index )
+      popupmenu.find('li').each(function(index)
       {
+         var liTarget = $(this);
+
          switch (index)
          {
             case 0:
-               $(this).text('Open on ' + scmType);
-               $(this).data('scm-link', scmLink);
+               if (scmLink)
+               {
+                  liTarget.text('Open on ' + scmType);
+                  liTarget.data('link', scmLink);
+                  liTarget.removeClass('hidden');
+               }
+               else
+               {
+                  liTarget.addClass('hidden');
+               }
+               break;
+
+            case 1:
+               if (packageLink)
+               {
+                  liTarget.text('Open on ' + packageType);
+                  liTarget.data('link', packageLink);
+                  liTarget.removeClass('hidden');
+               }
+               else
+               {
+                  liTarget.addClass('hidden');
+               }
                break;
          }
       });
@@ -104,8 +130,8 @@
 
       switch ($(this).data('action'))
       {
-         case 'openSCMLink':
-            var link = $(this).data('scm-link');
+         case 'openLink':
+            var link = $(this).data('link');
 
             if (typeof link === 'string')
             {
@@ -126,5 +152,5 @@
    $(document).bind('mousedown', hideNavContextMenu);
    $(window).bind('resize', hideNavContextMenu);
 
-   $('[data-scm-link]').bind('contextmenu', onNavContextClick);
+   $('[data-package-link], [data-scm-link]').bind('contextmenu', onNavContextClick);
 })();
