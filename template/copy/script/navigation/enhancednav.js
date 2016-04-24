@@ -61,11 +61,29 @@
 
       var target = $(this);
 
+      var packageLink = target.data('package-link');
+      var packageType = target.data('package-type') || '...';
+
+      // Create proper name for package type.
+      switch (packageType)
+      {
+         case 'npm':
+            packageType = 'NPM'
+            break;
+      }
+
+      var packageVersion = target.data('package-version');
+
       var scmLink = target.data('scm-link');
       var scmType = target.data('scm-type') || '...';
 
-      var packageLink = target.data('package-link');
-      var packageType = target.data('package-type') || '...';
+      // Create proper name for SCM type.
+      switch (scmType)
+      {
+         case 'github':
+            scmType = 'Github'
+            break;
+      }
 
       var popupmenu = $('#contextpopup .mdl-menu__container');
 
@@ -82,6 +100,10 @@
                   liTarget.text('Open on ' + scmType);
                   liTarget.data('link', scmLink);
                   liTarget.removeClass('hidden');
+
+                  // Add divider if there are additional non-hidden items
+                  if (packageLink || packageVersion) { liTarget.addClass('mdl-menu__item--full-bleed-divider'); }
+                  else { liTarget.removeClass('mdl-menu__item--full-bleed-divider'); }
                }
                else
                {
@@ -94,6 +116,22 @@
                {
                   liTarget.text('Open on ' + packageType);
                   liTarget.data('link', packageLink);
+                  liTarget.removeClass('hidden');
+
+                  // Add divider if there are additional non-hidden items
+                  if (packageVersion) { liTarget.addClass('mdl-menu__item--full-bleed-divider'); }
+                  else { liTarget.removeClass('mdl-menu__item--full-bleed-divider'); }
+               }
+               else
+               {
+                  liTarget.addClass('hidden');
+               }
+               break;
+
+            case 2:
+               if (packageVersion)
+               {
+                  liTarget.text('Version: ' + packageVersion);
                   liTarget.removeClass('hidden');
                }
                else

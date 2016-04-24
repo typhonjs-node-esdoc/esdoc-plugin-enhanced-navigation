@@ -9,6 +9,11 @@
    min-width: 250px;
 }
 
+.navigation .nav-is-alias
+{
+   font-style: italic;
+}
+
 .navigation .nav-dir-path
 {
    margin-top: 0;

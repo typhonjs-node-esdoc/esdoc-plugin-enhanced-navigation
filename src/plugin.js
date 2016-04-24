@@ -115,6 +115,7 @@ const s_CONTEXT_POPUP =
    <ul class="mdl-menu mdl-menu--bottom-left mdl-js-menu mdl-js-ripple-effect" for="context-menu">
       <li class="mdl-menu__item hidden" data-action="openLink">Open on ...</li>
       <li class="mdl-menu__item hidden" data-action="openLink">Open on ...</li>
+      <li disabled class="mdl-menu__item hidden">Version: ...</li>
    </ul>
 </div>
 `;

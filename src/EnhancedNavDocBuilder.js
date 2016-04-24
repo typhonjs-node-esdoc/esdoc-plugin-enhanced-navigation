@@ -6,6 +6,10 @@ import path       from 'path';
 import IceCap     from 'ice-cap';
 import DocBuilder from 'esdoc/out/src/Publisher/Builder/DocBuilder.js';
 
+import TestData   from './TestData.js';
+
+const s_KIND_ORDER = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
+
 /**
  * Enhanced Navigation Output Builder class.
  */
@@ -70,6 +74,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       let scmLink = '';
       let scmType = '';
 
+      const isAlias = data.isAlias ? ' nav-is-alias' : '';
+
+      const packageVersion = data.version ? ` data-package-version=${data.version}` : '';
+
       if (data.packageLink && data.packageLink.link && data.packageLink.type)
       {
          packageLink = ` data-package-link=${data.packageLink.link}`;
@@ -83,8 +91,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       }
 
       return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
-       + `<label for="package-${cntr}" class="nav-package" data-ice="dirPath"`
-        + `${packageLink}${packageType}${scmLink}${scmType}>${data.name}</label>`;
+       + `<label for="package-${cntr}" class="nav-package${isAlias}" data-ice="dirPath"`
+        + `${packageLink}${packageType}${packageVersion}${scmLink}${scmType}>${data.name}</label>`;
    }
 
    /**
@@ -101,7 +109,6 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       const kinds = ['class', 'function', 'variable', 'typedef', 'external'];
       const allDocs = this._find({ kind: kinds }).filter((v) => !v.builtinExternal);
-      const kindOrder = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
 
       // Sort by directory and kind.
       allDocs.sort((a, b) =>
@@ -118,7 +125,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          if (dirPathA === dirPathB)
          {
             if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
-            else { return kindOrder[kindA] > kindOrder[kindB] ? 1 : -1; }
+            else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
          }
          else
          {
@@ -130,28 +137,15 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       const localDataFilter = [];
       const managedData = [];
 
-      if (typeof global.$$esdoc_plugin_jspm === 'object' && typeof global.$$esdoc_plugin_jspm.packageData === 'object')
-      {
-         if (this._filterJSPMDocs(allDocs, managedData, global.$$esdoc_plugin_jspm.packageData))
-         {
-            localDataFilter.push('jspm_packages');
-         }
-      }
+      // Filter and process any JSPM docs.
+      if (this._filterJSPMDocs(allDocs, managedData)) { localDataFilter.push('jspm_packages'); }
 
-      if (typeof global.$$esdoc_plugin_npm === 'object' && typeof global.$$esdoc_plugin_npm.packageData === 'object')
-      {
-         if (this._filterNPMDocs(allDocs, managedData, global.$$esdoc_plugin_npm.packageData))
-         {
-            localDataFilter.push('node_modules');
-         }
-      }
+      // Filter and process any NPM docs.
+      if (this._filterNPMDocs(allDocs, managedData)) { localDataFilter.push('node_modules'); }
 
       this._filterLocalDocs(allDocs, localData, localDataFilter);
 
-      let lastDirPath = '.';
-
-      //this._testLocalData(localData);
-      //this._testManagedData(managedData);
+      //TestData.populate(localData, managedData);
 
       let groupCntr = 0;
       let folderCntr = 0;
@@ -207,32 +201,47 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return iceNav.html;
    }
 
-   _createFolderData(checked, path, baseSCMLink, packageLink)
+   _createFolderData(checked, dirPath, baseSCMLink, packageLink)
    {
       const folder =
       {
          checked,
-         path,
+         path: dirPath,
          docs: []
       }
 
       if (packageLink) { folder.packageLink = packageLink; }
-      if (baseSCMLink) { folder.scmLink = this._createSCMLink(baseSCMLink, path); }
+      if (baseSCMLink) { folder.scmLink = this._createSCMLink(baseSCMLink, dirPath); }
 
       return folder;
    }
 
-   _createPackageData(checked, baseSCMLink, packageLink)
+   _createPackageFolderData(checked, dirPath, packageData)
+   {
+      const packagePath = dirPath.replace(`${packageData.relativePath}${path.sep}`, '');
+
+      const folder = this._createFolderData(checked, packagePath, packageData.scmLink, packageData.packageLink);
+
+      folder.originalDirPath = dirPath;
+
+      return folder;
+   }
+
+   _createPackageData(checked, data)
    {
       const packageData =
       {
          checked,
-         path,
-         folders: []
+         folders: [],
+         isAlias: data.isAlias,
+         name: data.isAlias ? `${data.packageName} (${data.actualPackageName})` : data.packageName,
+         packageName: data.packageName,
+         packageData: data,
+         version: data.version
       }
 
-      if (packageLink) { folder.packageLink = packageLink; }
-      if (baseSCMLink) { folder.scmLink = this._createSCMLink(baseSCMLink); }
+      if (data.packageLink) { packageData.packageLink = data.packageLink; }
+      if (data.scmLink) { packageData.scmLink = data.scmLink; }
 
       return packageData;
    }
@@ -243,9 +252,12 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       switch (baseSCMLink.type)
       {
-         case 'Github':
+         case 'github':
             scmLink.link = baseSCMLink.link;
             scmLink.type = baseSCMLink.type;
+
+            // Add path separator if link doesn't end with one currently.
+            if (!scmLink.link.endsWith('/')) { scmLink.link += '/'; }
 
             // Add path and line number if available
             if (path) { scmLink.link += `tree/master/${path}`; }
@@ -316,32 +328,45 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             docLink: super._getURL(doc),
             scmLink: this._createSCMLink(baseRepoLink, filePath, doc.lineNumber)
          });
-
-         //console.log('!! _filterLocalDocs - LOCAL docs --------------------------------------------');
-         //console.log('!! _filterLocalDocs - filepath: ' + filePath);
-         //console.log('!! _filterLocalDocs - dirPath: ' + dirPath);
-         //console.log('!! _filterLocalDocs - shortName: ' + shortName);
-         //console.log('!! _filterLocalDocs - kind: ' + kind);
-         //console.log('!! _filterLocalDocs - super._getURL: ' + super._getURL(doc));
-         //console.log('!! _filterLocalDocs - doc: ' + JSON.stringify(doc));
       });
 
       localGroup.folders.push(currentFolder);
    }
 
-   _filterJSPMDocs(allDocs, managedData, packageData)
+   _filterJSPMDocs(allDocs, managedData)
    {
-      // Filter JSPM packages
-      const jspmDocs = allDocs.filter((doc) =>
-      {
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-         return filePath.startsWith('jspm_packages');
-      });
+      // Filter all docs that have JSPM package data attached
+      const jspmDocs = allDocs.filter((doc) => { return doc.packageManager && doc.packageManager === 'jspm'; });
 
       // Return early if there are no docs to process.
       if (jspmDocs.length === 0) { return false; }
 
-      // Create relative path to package map
+      // Sort by JSPM package name (potentially aliased), short file name and kind.
+      jspmDocs.sort((a, b) =>
+      {
+         const packageDataA = a.packageData;
+         const packageDataB = b.packageData;
+         const packageNameA = packageDataA.packageName;
+         const packageNameB = packageDataB.packageName;
+         const filePathA = a.longname.split('~')[0];
+         const filePathB = b.longname.split('~')[0];
+         const dirPathA = path.dirname(filePathA);
+         const dirPathB = path.dirname(filePathB);
+         const shortNameA = a.longname.split('~')[1];
+         const shortNameB = b.longname.split('~')[1];
+         const kindA = a.interface ? 'interface' : a.kind;
+         const kindB = b.interface ? 'interface' : b.kind;
+
+         if (packageNameA === packageNameB)
+         {
+            if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
+            else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
+         }
+         else
+         {
+            return packageNameA > packageNameB ? 1 : -1;
+         }
+      });
 
       const jspmGroup =
       {
@@ -355,54 +380,60 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       let currentPackage, currentFolder;
 
       // Set initial values
-      //{
-      //   const filePath = localDocs[0].longname.split('~')[0].replace(/^.*?[/]/, '');
-      //   currentFolder = this._createFolderData(true, path.dirname(filePath), baseRepoLink);
-      //}
+      {
+         currentPackage = this._createPackageData(false, jspmDocs[0].packageData);
+
+         const filePath = jspmDocs[0].longname.split('~')[0].replace(/^.*?[/]/, '');
+         currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+      }
 
       jspmDocs.forEach((doc) =>
       {
+         const jspmPackageData = doc.packageData;
          const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
          const dirPath = path.dirname(filePath);
          const shortName = doc.longname.split('~')[1];
          const kind = doc.interface ? 'interface' : doc.kind;
 
-         //if (currentFolder.path !== dirPath)
-         //{
-         //   localGroup.folders.push(currentFolder);
-         //   currentFolder = this._createFolderData(true, dirPath, baseRepoLink);
-         //}
+         if (currentPackage.packageName !== jspmPackageData.packageName)
+         {
+            currentPackage.folders.push(currentFolder);
 
-         //currentFolder.docs.push(
-         //{
-         //   type: `nav-kind-${kind}`,
-         //   name: shortName,
-         //   docLink: super._getURL(doc),
-         //   scmLink: this._createSCMLink(baseRepoLink, filePath, doc.lineNumber)
-         //});
+            jspmGroup.packages.push(currentPackage);
 
-         console.log('!! _filterJSPMDocs - JSPM docs ----------------------------------------------');
-         console.log('!! _filterJSPMDocs - filepath: ' + filePath);
-         console.log('!! _filterJSPMDocs - dirPath: ' + dirPath);
-         console.log('!! _filterJSPMDocs - shortName: ' + shortName);
-         console.log('!! _filterJSPMDocs - kind: ' + kind);
-         console.log('!! _filterJSPMDocs - super._getURL: ' + super._getURL(doc));
-         console.log('!! _filterJSPMDocs - doc: ' + JSON.stringify(doc));
+            currentPackage = this._createPackageData(false, jspmPackageData);
+            currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+         }
+         else
+         {
+            if (currentFolder.originalDirPath !== dirPath)
+            {
+               currentPackage.folders.push(currentFolder);
+               currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+            }
+         }
+
+         const packageFilePath = filePath.replace(`${currentPackage.packageData.relativePath}${path.sep}`, '');
+
+         currentFolder.docs.push(
+         {
+            type: `nav-kind-${kind}`,
+            name: shortName,
+            docLink: super._getURL(doc),
+            scmLink: this._createSCMLink(currentPackage.scmLink, packageFilePath, doc.lineNumber)
+         });
       });
 
-//      localGroup.folders.push(currentFolder);
+      currentPackage.folders.push(currentFolder);
+      jspmGroup.packages.push(currentPackage);
 
       return true;
    }
 
-   _filterNPMDocs(allDocs, managedData, packageData)
+   _filterNPMDocs(allDocs, managedData)
    {
-      // Filter NPM packages
-      const npmDocs = allDocs.filter((doc) =>
-      {
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-         return filePath.startsWith('node_modules');
-      });
+      // Filter all docs that have NPM package data attached
+      const npmDocs = allDocs.filter((doc) => { return doc.packageManager && doc.packageManager === 'npm'; });
 
       // Return early if there are no docs to process.
       if (npmDocs.length === 0) { return false; }
@@ -419,6 +450,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          console.log('!! _filterNPMDocs - dirPath: ' + dirPath);
          console.log('!! _filterNPMDocs - shortName: ' + shortName);
          console.log('!! _filterNPMDocs - kind: ' + kind);
+         console.log('!! _filterNPMDocs - super._getURL: ' + super._getURL(doc));
+         console.log('!! _filterNPMDocs - doc: ' + JSON.stringify(doc));
       });
 
       return true;
@@ -446,7 +479,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             let link = info.url.replace(/\.git$/, '');
             if (!link.endsWith('/')) { link += '/'; }
 
-            return { link, type: 'Github' };
+            return { link, type: 'github' };
          }
       }
 
@@ -471,288 +504,5 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       catch (err) { /* ... */ }
 
       return super._readTemplate(fileName);
-   }
-
-   _testLocalData(localData)
-   {
-      localData.push(
-       {
-          checked: true,
-          name: 'Local Source',
-          folders:
-           [
-              {
-                 checked: true,
-                 path: 'src',
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 docs:
-                  [
-                     { type: 'nav-kind-class', name: 'Class', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-interface', name: 'Interface', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-function', name: 'Function', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-variable', name: 'Variable', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-typedef', name: 'Typedef', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-external', name: 'External', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                  ]
-              },
-              {
-                 checked: true,
-                 path: 'src1',
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 docs:
-                  [
-                     { type: 'nav-kind-class', name: 'Class', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-interface', name: 'Interface', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-function', name: 'Function', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-variable', name: 'Variable', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-typedef', name: 'Typedef', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-external', name: 'External', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                  ]
-              },
-              {
-                 checked: true,
-                 path: 'src2',
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 docs:
-                  [
-                     { type: 'nav-kind-class', name: 'Class', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-interface', name: 'Interface', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-function', name: 'Function', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-variable', name: 'Variable', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-typedef', name: 'Typedef', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                     { type: 'nav-kind-external', name: 'External', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                  ]
-              }
-           ]
-       });
-   }
-
-   _testManagedData(managedData)
-   {
-      managedData.push(
-       {
-          checked: false,
-          name: 'JSPM Managed Source',
-          packages:
-           [
-              {
-                 checked: false,
-                 name: 'jspm-package1',
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 folders:
-                  [
-                     {
-                        checked: false,
-                        path: 'jspm-src',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'jspm-src1',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'jspm-src2',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     }
-                  ]
-              },
-              {
-                 checked: false,
-                 name: 'jspm-package2',
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 folders:
-                  [
-                     {
-                        checked: false,
-                        path: 'jspm-src',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'jspm-src1',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'jspm-src2',
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'JSPMClass', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'JSPMInterface', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'JSPMFunction', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'JSPMVariable', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'JSPMTypedef', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'JSPMExternal', docLink: 'https://google.com', scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     }
-                  ]
-              }
-           ]
-       });
-
-      managedData.push(
-       {
-          checked: false,
-          name: 'NPM Managed Source',
-          packages:
-           [
-              {
-                 checked: false,
-                 name: 'npm-package1',
-                 packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 folders:
-                  [
-                     {
-                        checked: false,
-                        path: 'npm-src',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'npm-src1',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'npm-src2',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     }
-                  ]
-              },
-              {
-                 checked: false,
-                 name: 'npm-package2',
-                 packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                 scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                 folders:
-                  [
-                     {
-                        checked: false,
-                        path: 'npm-src',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'npm-src1',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     },
-                     {
-                        checked: false,
-                        path: 'npm-src2',
-                        packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' },
-                        scmLink: { link: 'https://github.com/typhonrt', type: 'Github' },
-                        docs:
-                         [
-                            { type: 'nav-kind-class', name: 'NPMClass', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-interface', name: 'NPMInterface', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-function', name: 'NPMFunction', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-variable', name: 'NPMVariable', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-typedef', name: 'NPMTypedef', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } },
-                            { type: 'nav-kind-external', name: 'NPMExternal', docLink: 'https://google.com', packageLink: { link: 'https://www.npmjs.com/package/esdoc-plugin-jspm', type: 'NPM' }, scmLink: { link: 'https://github.com/typhonrt', type: 'Github' } }
-                         ]
-                     }
-                  ]
-              }
-           ]
-       });
    }
 }
