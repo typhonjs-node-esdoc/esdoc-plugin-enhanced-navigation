@@ -6,7 +6,7 @@ import path       from 'path';
 import IceCap     from 'ice-cap';
 import DocBuilder from 'esdoc/out/src/Publisher/Builder/DocBuilder.js';
 
-import TestData   from './TestData.js';
+// import TestData   from './TestData.js';
 
 const s_KIND_ORDER = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
 
@@ -140,12 +140,12 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Filter and process any JSPM docs.
       if (this._filterJSPMDocs(allDocs, managedData)) { localDataFilter.push('jspm_packages'); }
 
-      // Filter and process any NPM docs.
-      if (this._filterNPMDocs(allDocs, managedData)) { localDataFilter.push('node_modules'); }
+      // Filter and process any NPM docs. TODO
+      // if (this._filterNPMDocs(allDocs, managedData)) { localDataFilter.push('node_modules'); }
 
       this._filterLocalDocs(allDocs, localData, localDataFilter);
 
-      //TestData.populate(localData, managedData);
+      // TestData.populate(localData, managedData);
 
       let groupCntr = 0;
       let folderCntr = 0;
@@ -208,7 +208,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          checked,
          path: dirPath,
          docs: []
-      }
+      };
 
       if (packageLink) { folder.packageLink = packageLink; }
       if (baseSCMLink) { folder.scmLink = this._createSCMLink(baseSCMLink, dirPath); }
@@ -238,7 +238,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          packageName: data.packageName,
          packageData: data,
          version: data.version
-      }
+      };
 
       if (data.packageLink) { packageData.packageLink = data.packageLink; }
       if (data.scmLink) { packageData.scmLink = data.scmLink; }
@@ -348,10 +348,6 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const packageDataB = b.packageData;
          const packageNameA = packageDataA.packageName;
          const packageNameB = packageDataB.packageName;
-         const filePathA = a.longname.split('~')[0];
-         const filePathB = b.longname.split('~')[0];
-         const dirPathA = path.dirname(filePathA);
-         const dirPathB = path.dirname(filePathB);
          const shortNameA = a.longname.split('~')[1];
          const shortNameB = b.longname.split('~')[1];
          const kindA = a.interface ? 'interface' : a.kind;
@@ -377,7 +373,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       managedData.push(jspmGroup);
 
-      let currentPackage, currentFolder;
+      let currentFolder, currentPackage;
 
       // Set initial values
       {
@@ -430,6 +426,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return true;
    }
 
+/* TODO
    _filterNPMDocs(allDocs, managedData)
    {
       // Filter all docs that have NPM package data attached
@@ -446,16 +443,17 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const kind = doc.interface ? 'interface' : doc.kind;
 
          console.log('!! _filterNPMDocs NPM docs -----------------------------------------------');
-         console.log('!! _filterNPMDocs - filepath: ' + filePath);
-         console.log('!! _filterNPMDocs - dirPath: ' + dirPath);
-         console.log('!! _filterNPMDocs - shortName: ' + shortName);
-         console.log('!! _filterNPMDocs - kind: ' + kind);
-         console.log('!! _filterNPMDocs - super._getURL: ' + super._getURL(doc));
-         console.log('!! _filterNPMDocs - doc: ' + JSON.stringify(doc));
+         console.log(`!! _filterNPMDocs - filepath: ${filePath}`);
+         console.log(`!! _filterNPMDocs - dirPath: ${dirPath}`);
+         console.log(`!! _filterNPMDocs - shortName: ${shortName}`);
+         console.log(`!! _filterNPMDocs - kind: ${kind}`);
+         console.log(`!! _filterNPMDocs - super._getURL: ${super._getURL(doc)}`);
+         console.log(`!! _filterNPMDocs - doc: ${JSON.stringify(doc)}`);
       });
 
       return true;
    }
+*/
 
    /**
     * Parses the repo URL from `package.json` and determines repo type and base link. Currently only Github URLs

@@ -17,7 +17,7 @@ const config =
       { name: './src/plugin.js' }
    ],
 
-   "manual": { "changelog": ["./CHANGELOG.md"] }
+   manual: { changelog: ["./CHANGELOG.md"] }
 };
 
 fs.emptyDirSync(config.destination);

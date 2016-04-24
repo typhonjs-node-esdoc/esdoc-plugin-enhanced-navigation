@@ -11,7 +11,7 @@ import { taffy }              from 'taffydb';
 
 import EnhancedNavDocBuilder  from './EnhancedNavDocBuilder.js';
 
-let option, silent;
+let option;
 
 // Must store ESDoc configuration file to use later with EnhancedNavDocBuilder.
 let config, navHTML;
@@ -26,7 +26,7 @@ let config, navHTML;
 export function onStart(ev)
 {
    option = ev.data.option || {};
-   silent = option.silent || false;
+   option.silent = option.silent || false;
 }
 
 /**
