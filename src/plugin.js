@@ -94,6 +94,12 @@ export function onHandleHTML(ev)
          $('<script src="script/navigation/enhancednav.js"></script>\n').insertBefore($('body script').eq(1));
 
          $('.navigation').html(navHTML);
+
+         $('nav').data('navid', 'docs-nav-id-123434');
+         $('.navigation').data('ice', 'bogus');
+         $('.navigation').addClass('test-nav-id');
+
+         console.log('!! .navigation - data - nav-id: ' + $('.navigation').data('navid'));
       }
 
       ev.data.html = $.html();
@@ -106,7 +112,7 @@ export function onHandleHTML(ev)
  * Defines the MDL context popup used for linking source to the respective SCM.
  */
 const s_CONTEXT_POPUP =
-`
+ `
 <div id="contextpopup">
    <button id="context-menu" class="mdl-button mdl-js-button mdl-button--fab mdl-button--mini-fab mdl-js-ripple-effect hidden">
       <i class="material-icons">more_vert</i>

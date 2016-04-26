@@ -39,16 +39,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
    _buildFolderHTML(cntr, folder)
    {
-      let packageLink = '';
-      let packageType = '';
       let scmLink = '';
       let scmType = '';
-
-      if (folder.packageLink && folder.packageLink.link && folder.packageLink.type)
-      {
-         packageLink = ` data-package-link=${folder.packageLink.link}`;
-         packageType = ` data-package-type=${folder.packageLink.type}`;
-      }
 
       if (folder.scmLink && folder.scmLink.link && folder.scmLink.type)
       {
@@ -58,7 +50,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}>`
        + `<label for="folder-${cntr}" class="nav-dir-path" data-ice="dirPath"`
-        + `${packageLink}${packageType}${scmLink}${scmType}>${folder.path}</label>`;
+        + `${scmLink}${scmType}>${folder.path}</label>`;
    }
 
    _buildGroupHTML(cntr, group)
@@ -69,6 +61,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
    _buildPackageHTML(cntr, data)
    {
+      let navPackage = 'nav-package';
+
       let packageLink = '';
       let packageType = '';
       let scmLink = '';
@@ -82,6 +76,9 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       {
          packageLink = ` data-package-link=${data.packageLink.link}`;
          packageType = ` data-package-type=${data.packageLink.type}`;
+
+         // Set NPM class designation
+         if (data.packageLink.type === 'npm') { navPackage = 'nav-package-npm'; }
       }
 
       if (data.scmLink && data.scmLink.link && data.scmLink.type)
@@ -91,7 +88,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       }
 
       return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
-       + `<label for="package-${cntr}" class="nav-package${isAlias}" data-ice="dirPath"`
+       + `<label for="package-${cntr}" class="${navPackage}${isAlias}" data-ice="dirPath"`
         + `${packageLink}${packageType}${packageVersion}${scmLink}${scmType}>${data.name}</label>`;
    }
 
@@ -395,6 +392,9 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          {
             currentPackage.folders.push(currentFolder);
 
+            // If a package only has one folder then set that folders checked value to true.
+            if (currentPackage.folders.length === 1) { currentPackage.folders[0].checked = true; }
+
             jspmGroup.packages.push(currentPackage);
 
             currentPackage = this._createPackageData(false, jspmPackageData);
@@ -421,6 +421,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       });
 
       currentPackage.folders.push(currentFolder);
+
+      // If a package only has one folder then set that folders checked value to true.
+      if (currentPackage.folders.length === 1) { currentPackage.folders[0].checked = true; }
+
       jspmGroup.packages.push(currentPackage);
 
       return true;

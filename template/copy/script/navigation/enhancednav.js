@@ -21,6 +21,48 @@
       });
    }
 
+   function deserializeNavState()
+   {
+      try
+      {
+         if (sessionStorage)
+         {
+            var checkboxMap = JSON.parse(sessionStorage.getItem('nav-accordion-state'));
+
+            $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function(index)
+            {
+               var checkboxValue = checkboxMap[$(this).attr('name')];
+               if (checkboxValue) { $(this).prop('checked', checkboxValue); }
+            });
+
+            var navScrollTop = sessionStorage.getItem('nav-scrolltop');
+
+            if (navScrollTop) { $('.navigation').prop('scrollTop', navScrollTop); }
+         }
+      }
+      catch (err) { /* ... */ }
+   }
+
+   function serializeScrollState()
+   {
+      if (sessionStorage) { sessionStorage.setItem('nav-scrolltop', $('.navigation').prop('scrollTop')); }
+   }
+
+   function serializeNavState()
+   {
+      var checkboxMap = {};
+
+      $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function(index)
+      {
+         checkboxMap[$(this).attr('name')] = $(this).is(':checked');
+      });
+
+      console.log('!! checkboxSerialize - checkboxMap: ' + JSON.stringify(checkboxMap));
+      console.log('!! checkboxSerialize - nav scrollTop: ' + $('.navigation').prop('scrollTop'));
+
+      if (sessionStorage) { sessionStorage.setItem('nav-accordion-state', JSON.stringify(checkboxMap))}
+   }
+
    /**
     * Hides the nav context menu if visible. If an event is supplied it is checked against any existing context menu
     * and is ignored if the context menu is within the parent hierarchy.
@@ -179,11 +221,18 @@
       }
    }
 
+   // Stores navigation scroll position in session storage.
+   $('.navigation .nav-accordion-menu li a').on('click', serializeScrollState);
+
+   // Stores navigation accordion state changes in session storage.
+   $('.navigation :checkbox').change(serializeNavState);
+
    // Handle context menu clicked
    $('#contextpopup li[data-action]').on('click', onNavContextMenuClick);
 
    // Prevent default browser context menu from being triggered.
    $('.nav-accordion-menu').bind('contextmenu', function(event) { event.preventDefault(); });
+   $('#contextpopup').bind('contextmenu', function(event) { event.preventDefault(); });
 
    // Properly handle closing context menu when document mouse down clicked
    // This works when a context click occurs because the new context menu is shown with a small timeout.
@@ -191,4 +240,7 @@
    $(window).bind('resize', hideNavContextMenu);
 
    $('[data-package-link], [data-scm-link]').bind('contextmenu', onNavContextClick);
+
+   // Potentially deserialize accordion state on document load.
+   $(document).ready(deserializeNavState);
 })();

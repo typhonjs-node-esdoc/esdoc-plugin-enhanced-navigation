@@ -40,6 +40,22 @@
    color: #272f8f;
 }
 
+.navigation .nav-package-npm
+{
+   background: rgb(248,238,239); /* Old browsers */
+   background: -moz-linear-gradient(top, rgba(248,238,239,1) 0%, rgba(240,182,187,1) 50%, rgba(237,151,158,1) 51%, rgba(252,218,221,1) 100%); /* FF3.6-15 */
+   background: -webkit-linear-gradient(top, rgba(248,238,239,1) 0%,rgba(240,182,187,1) 50%,rgba(237,151,158,1) 51%,rgba(252,218,221,1) 100%); /* Chrome10-25,Safari5.1-6 */
+   background: linear-gradient(to bottom, rgba(248,238,239,1) 0%,rgba(240,182,187,1) 50%,rgba(237,151,158,1) 51%,rgba(252,218,221,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f8eeef', endColorstr='#fcdadd',GradientType=0 ); /* IE6-9 */
+
+   margin-top: 0;
+   margin-bottom: 0;
+   height: 25px;
+   line-height: 25px;
+   font-size: 0.9rem;
+   color: #272f8f;
+}
+
 .navigation .nav-header
 {
    margin-top: 0;
