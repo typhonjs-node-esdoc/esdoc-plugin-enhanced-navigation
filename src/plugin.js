@@ -51,6 +51,7 @@ export function onHandleConfig(ev)
 export function onHandleTag(ev)
 {
    navHTML = new EnhancedNavDocBuilder(taffy(ev.data.tag), config).buildNavDoc();
+   navHTML = navHTML.replace('data-nav-id=""', `data-nav-id="docs-nav-id-${Date.now()}"`);
 }
 
 /**
@@ -63,7 +64,7 @@ export function onHandleHTML(ev)
 {
    if (ev.data.fileName.endsWith('.html'))
    {
-      const $ = cheerio.load(ev.data.html, { decodeEntities: false });
+      const $ = cheerio.load(ev.data.html);
 
       // Replace standard navigation with enhanced navigation.
       if ($('.navigation').data('ice') === 'nav' && $('.navigation').find('li[data-ice="doc"]').length > 0)
@@ -94,12 +95,6 @@ export function onHandleHTML(ev)
          $('<script src="script/navigation/enhancednav.js"></script>\n').insertBefore($('body script').eq(1));
 
          $('.navigation').html(navHTML);
-
-         $('nav').data('navid', 'docs-nav-id-123434');
-         $('.navigation').data('ice', 'bogus');
-         $('.navigation').addClass('test-nav-id');
-
-         console.log('!! .navigation - data - nav-id: ' + $('.navigation').data('navid'));
       }
 
       ev.data.html = $.html();

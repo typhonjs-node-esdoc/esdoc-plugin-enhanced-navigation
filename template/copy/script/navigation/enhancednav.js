@@ -21,46 +21,38 @@
       });
    }
 
+   /**
+    * Deserializes navigation accordion state from session storage.
+    */
    function deserializeNavState()
    {
-      try
+      var navID = $('.navigation .nav-accordion-menu').data('nav-id');
+
+      if (sessionStorage)
       {
-         if (sessionStorage)
+         var checkboxMap = sessionStorage.getItem(navID + '-accordion-state');
+
+         // If there is no data in session storage then create an empty map.
+         if (checkboxMap == null) { checkboxMap = '{}'; }
+
+         checkboxMap = JSON.parse(checkboxMap);
+
+         $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function()
          {
-            var checkboxMap = JSON.parse(sessionStorage.getItem('nav-accordion-state'));
-
-            $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function(index)
-            {
-               var checkboxValue = checkboxMap[$(this).attr('name')];
-               if (checkboxValue) { $(this).prop('checked', checkboxValue); }
-            });
-
-            var navScrollTop = sessionStorage.getItem('nav-scrolltop');
-
-            if (navScrollTop) { $('.navigation').prop('scrollTop', navScrollTop); }
-         }
+            var checkboxValue = checkboxMap[$(this).attr('name')];
+            if (typeof checkboxValue === 'boolean') { $(this).prop('checked', checkboxValue); }
+         });
       }
-      catch (err) { /* ... */ }
-   }
 
-   function serializeScrollState()
-   {
-      if (sessionStorage) { sessionStorage.setItem('nav-scrolltop', $('.navigation').prop('scrollTop')); }
-   }
+      // Set navigation menu visible
+      $('.navigation .nav-accordion-menu').removeClass('hidden');
 
-   function serializeNavState()
-   {
-      var checkboxMap = {};
-
-      $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function(index)
+      // Set navigation menu scroll bar from session state.
+      if (sessionStorage)
       {
-         checkboxMap[$(this).attr('name')] = $(this).is(':checked');
-      });
-
-      console.log('!! checkboxSerialize - checkboxMap: ' + JSON.stringify(checkboxMap));
-      console.log('!! checkboxSerialize - nav scrollTop: ' + $('.navigation').prop('scrollTop'));
-
-      if (sessionStorage) { sessionStorage.setItem('nav-accordion-state', JSON.stringify(checkboxMap))}
+         var navScrollTop = sessionStorage.getItem(navID + '-scrolltop');
+         if (typeof navScrollTop === 'string') { $('.navigation').prop('scrollTop', navScrollTop); }
+      }
    }
 
    /**
@@ -110,7 +102,7 @@
       switch (packageType)
       {
          case 'npm':
-            packageType = 'NPM'
+            packageType = 'NPM';
             break;
       }
 
@@ -123,7 +115,7 @@
       switch (scmType)
       {
          case 'github':
-            scmType = 'Github'
+            scmType = 'Github';
             break;
       }
 
@@ -218,6 +210,35 @@
                window.open(link, '_blank', 'location=yes,menubar=yes,scrollbars=yes,status=yes');
             }
             break;
+      }
+   }
+
+   /**
+    * Serializes to session storage the navigation menu accordion state.
+    */
+   function serializeNavState()
+   {
+      var checkboxMap = {};
+
+      $('.navigation .nav-accordion-menu').find('input[type="checkbox"]').each(function()
+      {
+         checkboxMap[$(this).attr('name')] = $(this).is(':checked');
+      });
+
+      var navID = $('.navigation .nav-accordion-menu').data('nav-id');
+
+      if (sessionStorage) { sessionStorage.setItem(navID + '-accordion-state', JSON.stringify(checkboxMap))}
+   }
+
+   /**
+    * Serializes to session storage the navigation menu scroll state.
+    */
+   function serializeScrollState()
+   {
+      if (sessionStorage)
+      {
+         var navID = $('.navigation .nav-accordion-menu').data('nav-id');
+         sessionStorage.setItem(navID + '-scrolltop', $('.navigation').prop('scrollTop'));
       }
    }
 
