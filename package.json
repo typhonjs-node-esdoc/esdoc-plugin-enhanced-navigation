@@ -1,6 +1,6 @@
 {
   "name": "esdoc-plugin-enhanced-navigation",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "homepage": "https://github.com/typhonjs-node-esdoc/esdoc-plugin-enhanced-navigation/",
   "description": "Replaces the standard ESDoc left hand source navigation with an enhanced version.",
   "license": "MPL-2.0",
@@ -30,9 +30,9 @@
       "underscore": "npm:underscore@^1.8.3"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^5.8.35",
-      "babel-runtime": "npm:babel-runtime@^5.8.35",
-      "core-js": "npm:core-js@^1.2.6"
+      "babel": "npm:babel-core@^5.8.0",
+      "babel-runtime": "npm:babel-runtime@^5.8.0",
+      "core-js": "npm:core-js@^1.2.0"
     }
   },
   "typhonjs": {
