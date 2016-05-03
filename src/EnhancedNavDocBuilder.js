@@ -114,8 +114,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const filePathB = b.longname.split('~')[0];
          const dirPathA = path.dirname(filePathA);
          const dirPathB = path.dirname(filePathB);
-         const shortNameA = a.longname.split('~')[1];
-         const shortNameB = b.longname.split('~')[1];
+         const shortNameA = a.longname.split('~')[1].toLocaleLowerCase();
+         const shortNameB = b.longname.split('~')[1].toLocaleLowerCase();
          const kindA = a.interface ? 'interface' : a.kind;
          const kindB = b.interface ? 'interface' : b.kind;
 

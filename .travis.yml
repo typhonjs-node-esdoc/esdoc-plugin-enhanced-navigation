@@ -2,8 +2,8 @@ language: node_js
 node_js:
   - "5.8.0"
 before_script:
-  - npm install -g jspm
   - npm install -g codecov
+  - npm install -g jspm
   - jspm install
 script:
   - npm run eslint
