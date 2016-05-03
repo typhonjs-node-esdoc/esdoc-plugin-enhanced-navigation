@@ -37,6 +37,36 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return `<a href="${doc.docLink}"${packageLink}${packageType}${scmLink}${scmType}>${doc.name}</a>`;
    }
 
+   /**
+    * Builds the file HTML to fill the IceCap template.
+    *
+    * If the file has an entry `hidden` that is true the file will be hidden. This is useful when all files in a
+    * directory have a single default export which doesn't clash with any other export and each export matches
+    * the file name. All TyphonJS repos for instance have a strict naming policy to only provide a single default
+    * export which matches the file name.
+    *
+    * @param {number}   cntr - File counter.
+    * @param {object}   file - File data.
+    *
+    * @returns {*}
+    * @private
+    */
+   _buildFileHTML(cntr, file)
+   {
+      let scmLink = '';
+      let scmType = '';
+
+      if (file.scmLink && file.scmLink.link && file.scmLink.type)
+      {
+         scmLink = ` data-scm-link=${file.scmLink.link}`;
+         scmType = ` data-scm-type=${file.scmLink.type}`;
+      }
+
+      return `<input type="checkbox" name="file-${cntr}" id="file-${cntr}"${file.checked ? ' checked' : ''}>`
+       + `<label for="file-${cntr}" class="nav-file${file.hidden ? ' hidden' : ''}"`
+        + `${scmLink}${scmType}>${file.name}</label>`;
+   }
+
    _buildFolderHTML(cntr, folder)
    {
       let scmLink = '';
@@ -49,7 +79,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       }
 
       return `<input type="checkbox" name="folder-${cntr}" id="folder-${cntr}"${folder.checked ? ' checked' : ''}>`
-       + `<label for="folder-${cntr}" class="nav-dir-path" data-ice="dirPath"`
+       + `<label for="folder-${cntr}" class="nav-dir-path"`
         + `${scmLink}${scmType}>${folder.path}</label>`;
    }
 
@@ -88,7 +118,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       }
 
       return `<input type="checkbox" name="package-${cntr}" id="package-${cntr}"${data.checked ? ' checked' : ''}>`
-       + `<label for="package-${cntr}" class="${navPackage}${isAlias}" data-ice="dirPath"`
+       + `<label for="package-${cntr}" class="${navPackage}${isAlias}"`
         + `${packageLink}${packageType}${packageVersion}${scmLink}${scmType}>${data.name}</label>`;
    }
 
@@ -107,27 +137,16 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       const kinds = ['class', 'function', 'variable', 'typedef', 'external'];
       const allDocs = this._find({ kind: kinds }).filter((v) => !v.builtinExternal);
 
-      // Sort by directory and kind.
-      allDocs.sort((a, b) =>
+      // Add more data for each doc.
+      allDocs.forEach((doc) =>
       {
-         const filePathA = a.longname.split('~')[0].toLocaleLowerCase();
-         const filePathB = b.longname.split('~')[0].toLocaleLowerCase();
-         const dirPathA = path.dirname(filePathA);
-         const dirPathB = path.dirname(filePathB);
-         const shortNameA = a.longname.split('~')[1].toLocaleLowerCase();
-         const shortNameB = b.longname.split('~')[1].toLocaleLowerCase();
-         const kindA = a.interface ? 'interface' : a.kind;
-         const kindB = b.interface ? 'interface' : b.kind;
+         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         const dirPath = path.dirname(filePath);
+         const fileName = path.basename(filePath);
+         const shortName = doc.longname.split('~')[1];
+         const kind = doc.interface ? 'interface' : doc.kind;
 
-         if (dirPathA === dirPathB)
-         {
-            if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
-            else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
-         }
-         else
-         {
-            return dirPathA > dirPathB ? 1 : -1;
-         }
+         doc.__navData = { dirPath, fileName, filePath, kind, shortName };
       });
 
       const localData = [];
@@ -142,10 +161,11 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       this._filterLocalDocs(allDocs, localData, localDataFilter);
 
-      // TestData.populate(localData, managedData);
+//      TestData.populate(localData, managedData);
 
       let groupCntr = 0;
       let folderCntr = 0;
+      let fileCntr = 0;
       let packageCntr = 0;
 
       if (localData.length > 0)
@@ -154,10 +174,15 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          {
             ice.loop('navFolder', group.folders, (cntr, folder, ice) =>
             {
-               ice.loop('doc', folder.docs, (cntr, doc, ice) =>
+               ice.loop('navFile', folder.files, (cntr, file, ice) =>
                {
-                  ice.attr('doc', 'class', doc.type);
-                  ice.load('docLink', this._buildDocLinkHTML(doc));
+                  ice.loop('doc', file.docs, (cntr, doc, ice) =>
+                  {
+                     ice.attr('doc', 'class', doc.type);
+                     ice.load('docLink', this._buildDocLinkHTML(doc));
+                  });
+
+                  ice.load('navFile', this._buildFileHTML(fileCntr++, file), IceCap.MODE_PREPEND);
                });
 
                ice.load('navFolder', this._buildFolderHTML(folderCntr++, folder), IceCap.MODE_PREPEND);
@@ -177,10 +202,15 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             {
                ice.loop('navFolder', packageData.folders, (cntr, folder, ice) =>
                {
-                  ice.loop('doc', folder.docs, (cntr, doc, ice) =>
+                  ice.loop('navFile', folder.files, (cntr, file, ice) =>
                   {
-                     ice.attr('doc', 'class', doc.type);
-                     ice.load('docLink', this._buildDocLinkHTML(doc));
+                     ice.loop('doc', file.docs, (cntr, doc, ice) =>
+                     {
+                        ice.attr('doc', 'class', doc.type);
+                        ice.load('docLink', this._buildDocLinkHTML(doc));
+                     });
+
+                     ice.load('navFile', this._buildFileHTML(fileCntr++, file), IceCap.MODE_PREPEND);
                   });
 
                   ice.load('navFolder', this._buildFolderHTML(folderCntr++, folder), IceCap.MODE_PREPEND);
@@ -198,19 +228,45 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return iceNav.html;
    }
 
+   _createFileData(checked, filePath, fileName, baseSCMLink, packageLink)
+   {
+      const file =
+      {
+         checked,
+         name: fileName,
+         docs: []
+      };
+
+      if (packageLink) { file.packageLink = packageLink; }
+      if (baseSCMLink) { file.scmLink = this._createSCMLink(baseSCMLink, filePath); }
+
+      return file;
+   }
+
    _createFolderData(checked, dirPath, baseSCMLink, packageLink)
    {
       const folder =
       {
          checked,
          path: dirPath,
-         docs: []
+         files: []
       };
 
       if (packageLink) { folder.packageLink = packageLink; }
       if (baseSCMLink) { folder.scmLink = this._createSCMLink(baseSCMLink, dirPath); }
 
       return folder;
+   }
+
+   _createPackageFileData(checked, dirPath, fileName, packageData)
+   {
+      const packagePath = dirPath.replace(`${packageData.relativePath}${path.sep}`, '');
+
+      const file = this._createFileData(checked, packagePath, fileName, packageData.scmLink);
+
+      file.originalDirPath = dirPath;
+
+      return file;
    }
 
    _createPackageFolderData(checked, dirPath, packageData)
@@ -274,7 +330,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Filter local docs
       const localDocs = allDocs.filter((doc) =>
       {
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         const filePath = doc.__navData.filePath;
 
          let localDoc = true;
 
@@ -285,6 +341,9 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       // Return early if there are no docs to process.
       if (localDocs.length === 0) { return false; }
+
+      // Sort by directory / file name / kind.
+      this._sortDocs(localDocs);
 
       const localGroup =
       {
@@ -297,20 +356,29 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       const baseRepoLink = this._getLocalRepoUrl();
 
-      let currentFolder;
+      let currentFile, currentFolder;
 
       // Set initial values
       {
-         const filePath = localDocs[0].longname.split('~')[0].replace(/^.*?[/]/, '');
-         currentFolder = this._createFolderData(true, path.dirname(filePath), baseRepoLink);
+         const data = localDocs[0].__navData;
+         currentFile = this._createFileData(true, data.filePath, data.fileName, baseRepoLink);
+         currentFolder = this._createFolderData(true, data.dirPath, baseRepoLink);
       }
 
       localDocs.forEach((doc) =>
       {
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-         const dirPath = path.dirname(filePath);
-         const shortName = doc.longname.split('~')[1];
-         const kind = doc.interface ? 'interface' : doc.kind;
+         const data = doc.__navData;
+         const fileName = data.fileName;
+         const filePath = data.filePath;
+         const dirPath = data.dirPath;
+         const shortName = data.shortName;
+         const kind = data.kind;
+
+         if (currentFile.name !== fileName)
+         {
+            currentFolder.files.push(currentFile);
+            currentFile = this._createFileData(true, dirPath, fileName, baseRepoLink);
+         }
 
          if (currentFolder.path !== dirPath)
          {
@@ -318,7 +386,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             currentFolder = this._createFolderData(true, dirPath, baseRepoLink);
          }
 
-         currentFolder.docs.push(
+         currentFile.docs.push(
          {
             type: `nav-kind-${kind}`,
             name: shortName,
@@ -327,6 +395,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          });
       });
 
+      currentFolder.files.push(currentFile);
       localGroup.folders.push(currentFolder);
    }
 
@@ -338,28 +407,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Return early if there are no docs to process.
       if (jspmDocs.length === 0) { return false; }
 
-      // Sort by JSPM package name (potentially aliased), short file name and kind.
-      jspmDocs.sort((a, b) =>
-      {
-         const packageDataA = a.packageData;
-         const packageDataB = b.packageData;
-         const packageNameA = packageDataA.packageName;
-         const packageNameB = packageDataB.packageName;
-         const shortNameA = a.longname.split('~')[1];
-         const shortNameB = b.longname.split('~')[1];
-         const kindA = a.interface ? 'interface' : a.kind;
-         const kindB = b.interface ? 'interface' : b.kind;
-
-         if (packageNameA === packageNameB)
-         {
-            if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
-            else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
-         }
-         else
-         {
-            return packageNameA > packageNameB ? 1 : -1;
-         }
-      });
+      this._sortPackageDocs(jspmDocs);
 
       const jspmGroup =
       {
@@ -370,23 +418,34 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       managedData.push(jspmGroup);
 
-      let currentFolder, currentPackage;
+      let currentFile, currentFolder, currentPackage;
 
       // Set initial values
       {
          currentPackage = this._createPackageData(false, jspmDocs[0].packageData);
 
-         const filePath = jspmDocs[0].longname.split('~')[0].replace(/^.*?[/]/, '');
-         currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+         const data = jspmDocs[0].__navData;
+
+         currentFile = this._createPackageFileData(true, data.filePath, data.fileName, currentPackage.packageData);
+         currentFolder = this._createPackageFolderData(true, data.dirPath, currentPackage.packageData);
       }
 
       jspmDocs.forEach((doc) =>
       {
          const jspmPackageData = doc.packageData;
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
-         const dirPath = path.dirname(filePath);
-         const shortName = doc.longname.split('~')[1];
-         const kind = doc.interface ? 'interface' : doc.kind;
+
+         const data = doc.__navData;
+         const fileName = data.fileName;
+         const filePath = data.filePath;
+         const dirPath = data.dirPath;
+         const shortName = data.shortName;
+         const kind = data.kind;
+
+         if (currentFile.name !== fileName)
+         {
+            currentFolder.files.push(currentFile);
+            currentFile = this._createPackageFileData(true, filePath, fileName, jspmPackageData);
+         }
 
          if (currentPackage.packageName !== jspmPackageData.packageName)
          {
@@ -398,20 +457,20 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             jspmGroup.packages.push(currentPackage);
 
             currentPackage = this._createPackageData(false, jspmPackageData);
-            currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+            currentFolder = this._createPackageFolderData(false, dirPath, currentPackage.packageData);
          }
          else
          {
             if (currentFolder.originalDirPath !== dirPath)
             {
                currentPackage.folders.push(currentFolder);
-               currentFolder = this._createPackageFolderData(false, path.dirname(filePath), currentPackage.packageData);
+               currentFolder = this._createPackageFolderData(false, filePath, currentPackage.packageData);
             }
          }
 
          const packageFilePath = filePath.replace(`${currentPackage.packageData.relativePath}${path.sep}`, '');
 
-         currentFolder.docs.push(
+         currentFile.docs.push(
          {
             type: `nav-kind-${kind}`,
             name: shortName,
@@ -420,6 +479,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          });
       });
 
+      currentFolder.files.push(currentFile);
       currentPackage.folders.push(currentFolder);
 
       // If a package only has one folder then set that folders checked value to true.
@@ -506,5 +566,115 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       catch (err) { /* ... */ }
 
       return super._readTemplate(fileName);
+   }
+
+   /**
+    * Sort by directory / file name / doc short name / kind.
+    *
+    * @param {Array}    docs - The ESDoc docs / tags to sort.
+    * @param {boolean}  filesHidden - (Optional) if true then file names are excluded from sorting.
+    *
+    * @private
+    */
+   _sortDocs(docs, filesHidden = false)
+   {
+      docs.sort((a, b) =>
+      {
+         const dirPathA = a.__navData.dirPath.toLocaleLowerCase();
+         const dirPathB = b.__navData.dirPath.toLocaleLowerCase();
+         const fileNameA = a.__navData.fileName.toLocaleLowerCase();
+         const fileNameB = b.__navData.fileName.toLocaleLowerCase();
+         const shortNameA = a.__navData.shortName.toLocaleLowerCase();
+         const shortNameB = b.__navData.shortName.toLocaleLowerCase();
+         const kindA = a.__navData.kind;
+         const kindB = b.__navData.kind;
+
+         if (dirPathA === dirPathB)
+         {
+            // Only sort by short name and kind.
+            if (filesHidden)
+            {
+               if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
+               else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
+            }
+            else // Full sort with file name, short name and kind.
+            {
+               if (fileNameA === fileNameB)
+               {
+                  if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
+                  else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
+               }
+               else
+               {
+                  return fileNameA > fileNameB ? 1 : -1;
+               }
+            }
+         }
+         else
+         {
+            return dirPathA > dirPathB ? 1 : -1;
+         }
+      });
+   }
+
+   /**
+    * Sort by package name / directory / file name / doc short name / kind.
+    *
+    * @param {Array}    docs - The ESDoc docs / tags to sort.
+    * @param {boolean}  filesHidden - (Optional) if true then file names are excluded from sorting.
+    *
+    * @private
+    */
+   _sortPackageDocs(docs, filesHidden = false)
+   {
+      // Sort by JSPM package name (potentially aliased), directory path, file name, doc name and kind.
+      docs.sort((a, b) =>
+      {
+         const packageDataA = a.packageData;
+         const packageDataB = b.packageData;
+         const packageNameA = packageDataA.packageName;
+         const packageNameB = packageDataB.packageName;
+         const dirPathA = a.__navData.dirPath.toLocaleLowerCase();
+         const dirPathB = b.__navData.dirPath.toLocaleLowerCase();
+         const fileNameA = a.__navData.fileName.toLocaleLowerCase();
+         const fileNameB = b.__navData.fileName.toLocaleLowerCase();
+         const shortNameA = a.__navData.shortName.toLocaleLowerCase();
+         const shortNameB = b.__navData.shortName.toLocaleLowerCase();
+         const kindA = a.__navData.kind;
+         const kindB = b.__navData.kind;
+
+         if (packageNameA === packageNameB)
+         {
+            if (dirPathA === dirPathB)
+            {
+               // Only sort by short name and kind.
+               if (filesHidden)
+               {
+                  if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
+                  else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
+               }
+               else // Full sort with file name, short name and kind.
+               {
+                  if (fileNameA === fileNameB)
+                  {
+                     if (kindA === kindB) { return shortNameA > shortNameB ? 1 : -1; }
+                     else { return s_KIND_ORDER[kindA] > s_KIND_ORDER[kindB] ? 1 : -1; }
+                  }
+                  else
+                  {
+                     return fileNameA > fileNameB ? 1 : -1;
+                  }
+               }
+            }
+            else
+            {
+               return dirPathA > dirPathB ? 1 : -1;
+            }
+         }
+         else
+         {
+            return packageNameA > packageNameB ? 1 : -1;
+         }
+      });
    }
 }

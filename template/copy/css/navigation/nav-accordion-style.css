@@ -101,6 +101,11 @@
    transform: translateY(-50%) rotate(-90deg);
 }
 
+.nav-accordion-menu .nav-accordion-file label::after
+{
+   background-position: -48px 0;
+}
+
 .nav-accordion-menu label::after
 {
    /* folder icons */
@@ -122,6 +127,12 @@
 {
    /* show open folder icon if item is checked */
    background-position: -32px 0;
+}
+
+.nav-accordion-menu .nav-accordion-file input[type=checkbox]:checked + label::after
+{
+   /* show open file icon if item is checked */
+   background-position: -64px 0;
 }
 
 .nav-accordion-menu input[type=checkbox]:checked + label + ul,
