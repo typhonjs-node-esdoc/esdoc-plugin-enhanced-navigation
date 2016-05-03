@@ -110,8 +110,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Sort by directory and kind.
       allDocs.sort((a, b) =>
       {
-         const filePathA = a.longname.split('~')[0];
-         const filePathB = b.longname.split('~')[0];
+         const filePathA = a.longname.split('~')[0].toLocaleLowerCase();
+         const filePathB = b.longname.split('~')[0].toLocaleLowerCase();
          const dirPathA = path.dirname(filePathA);
          const dirPathB = path.dirname(filePathB);
          const shortNameA = a.longname.split('~')[1].toLocaleLowerCase();
