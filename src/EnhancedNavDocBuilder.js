@@ -303,23 +303,26 @@ export default class EnhancedNavDocBuilder extends DocBuilder
    {
       const scmLink = {};
 
-      switch (baseSCMLink.type)
+      if (baseSCMLink && baseSCMLink.type)
       {
-         case 'github':
-            scmLink.link = baseSCMLink.link;
-            scmLink.type = baseSCMLink.type;
+         switch (baseSCMLink.type)
+         {
+            case 'github':
+               scmLink.link = baseSCMLink.link;
+               scmLink.type = baseSCMLink.type;
 
-            // Add path separator if link doesn't end with one currently.
-            if (!scmLink.link.endsWith('/')) { scmLink.link += '/'; }
+               // Add path separator if link doesn't end with one currently.
+               if (!scmLink.link.endsWith('/')) { scmLink.link += '/'; }
 
-            // Add path and line number if available
-            if (path) { scmLink.link += `tree/master/${path}`; }
-            if (lineNumber) { scmLink.link += `#L${lineNumber}`; }
-            break;
+               // Add path and line number if available
+               if (path) { scmLink.link += `tree/master/${path}`; }
+               if (lineNumber) { scmLink.link += `#L${lineNumber}`; }
+               break;
 
-         default:
-            console.log(`esdoc-plugin-enhanced-navigation - Warning: unsupported SCM type '${baseSCMLink.type}'.`);
-            return undefined;
+            default:
+               console.log(`esdoc-plugin-enhanced-navigation - Warning: unsupported SCM type '${baseSCMLink.type}'.`);
+               return undefined;
+         }
       }
 
       return scmLink;
