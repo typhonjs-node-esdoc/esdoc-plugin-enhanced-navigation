@@ -37,7 +37,7 @@ If installing and working directly with `esdoc-plugin-enhanced-navigation` the f
 
   "devDependencies": {
     "esdoc": "^0.4.0",
-    "esdoc-plugin-enhanced-navigation": "^0.0.4",  
+    "esdoc-plugin-enhanced-navigation": "^0.0.5",  
     "esdoc-plugin-jspm": "^0.6.0",  // Optional if using JSPM
     "jspm": "^0.16.0"
   },
