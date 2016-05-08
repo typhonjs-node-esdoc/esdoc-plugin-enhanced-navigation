@@ -31,7 +31,7 @@ export function onStart(ev)
 }
 
 /**
- * Stores ESDoc configuration file.
+ * Stores ESDoc configuration file and copies extra files to doc output directory.
  *
  * @param {object}   ev - Event from ESDoc containing data field.
  */
@@ -42,10 +42,7 @@ export function onHandleConfig(ev)
 }
 
 /**
- * Since the source root is "." / the base root of the repo ESDoc currently creates the wrong import path, so they
- * need to be corrected. ESDoc fabricates "<package name>/<base root>" when we want just "<package name>/" for the local
- * project code. For the JSPM packages the import statement is "<package name>/<base root>/<JSPM path>" where
- * the desired path is the just the normalized JSPM path to the associated package.
+ * Generates the new left-hand side navigation HTML.
  *
  * @param {object}   ev - Event from ESDoc containing data field
  */
@@ -56,8 +53,7 @@ export function onHandleTag(ev)
 }
 
 /**
- * The generated HTML also includes the full JSPM path, so various RegExp substitutions are run to transform the
- * full paths to the normalized JSPM package paths.
+ * Replaces the left-hand side navigation on all relevant HTML pages of generated docs.
  *
  * @param {object}   ev - Event from ESDoc containing data field
  */
@@ -132,5 +128,5 @@ const s_COPY_FILES = (docDestination) =>
    const sourcePath = path.resolve(__dirname, '../template/copy');
    const targetPath = path.resolve(process.cwd(), docDestination);
 
-   fs.copySync(sourcePath, targetPath);
+   fs.copySync(sourcePath, targetPath, { clobber: false });
 };
