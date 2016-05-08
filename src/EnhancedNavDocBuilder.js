@@ -288,13 +288,13 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return folder;
    }
 
-   _createPackageFileData(checked, dirPath, fileName, packageData)
+   _createPackageFileData(checked, filePath, fileName, packageData)
    {
-      const packagePath = dirPath.replace(`${packageData.relativePath}${path.sep}`, '');
+      const packagePath = filePath.replace(`${packageData.relativePath}${path.sep}`, '');
 
       const file = this._createFileData(checked, packagePath, fileName, packageData.scmLink);
 
-      file.originalDirPath = dirPath;
+      file.originalFilePath = filePath;
 
       return file;
    }
@@ -394,7 +394,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Set initial values
       {
          const data = localDocs[0].__navData;
-         currentFile = this._createFileData(true, data.dirPath, data.fileName, baseRepoLink);
+         currentFile = this._createFileData(true, data.filePath, data.fileName, baseRepoLink);
          currentFile.hidden = data.fileHidden;
          currentFolder = this._createFolderData(true, data.dirPath, baseRepoLink);
       }
@@ -409,10 +409,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortName = data.shortName;
          const kind = data.kind;
 
-         if (currentFile.name !== fileName || currentFile.path !== dirPath)
+         if (currentFile.name !== fileName || currentFile.path !== filePath)
          {
             currentFolder.files.push(currentFile);
-            currentFile = this._createFileData(true, dirPath, fileName, baseRepoLink);
+            currentFile = this._createFileData(true, filePath, fileName, baseRepoLink);
             currentFile.hidden = fileHidden;
          }
 
@@ -479,7 +479,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortName = data.shortName;
          const kind = data.kind;
 
-         if (currentFile.name !== fileName || currentFile.originalDirPath !== filePath)
+         if (currentFile.name !== fileName || currentFile.originalFilePath !== filePath)
          {
             currentFolder.files.push(currentFile);
             currentFile = this._createPackageFileData(true, filePath, fileName, jspmPackageData);
