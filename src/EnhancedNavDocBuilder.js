@@ -27,6 +27,13 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       this.options = options;
    }
 
+   /**
+    * Creates the HTML for template insertion for a doc / tag link.
+    *
+    * @param {object}   doc - An object hash describing the doc / tag link.
+    * @returns {*}
+    * @private
+    */
    _buildDocLinkHTML(doc)
    {
       let packageLink = '';
@@ -79,6 +86,15 @@ export default class EnhancedNavDocBuilder extends DocBuilder
         + `${scmLink}${scmType}>${file.name}</label>`;
    }
 
+   /**
+    * Creates the HTML for template insertion for a source folder.
+    *
+    * @param {number}   cntr - Total running count of folders to create unique ID.
+    * @param {object}   folder - An object hash describing the folder.
+    *
+    * @returns {*}
+    * @private
+    */
    _buildFolderHTML(cntr, folder)
    {
       let scmLink = '';
@@ -95,12 +111,30 @@ export default class EnhancedNavDocBuilder extends DocBuilder
         + `${scmLink}${scmType}>${folder.path}</label>`;
    }
 
+   /**
+    * Creates the HTML for template insertion for a source group (local, JSPM, NPM, etc.).
+    *
+    * @param {number}   cntr - Total running count of source groups to create unique ID.
+    * @param {object}   group - An object hash describing the source group.
+    *
+    * @returns {*}
+    * @private
+    */
    _buildGroupHTML(cntr, group)
    {
       return `<input type="checkbox" name="group-${cntr}" id="group-${cntr}"${group.checked ? ' checked' : ''}>`
        + `<label for="group-${cntr}" class="nav-header">${group.name}</label>`;
    }
 
+   /**
+    * Creates the HTML for template insertion for a managed package (JSPM, NPM, etc.).
+    *
+    * @param {number}   cntr - Total running count of source groups to create unique ID.
+    * @param {object}   data - An object hash describing the package.
+    *
+    * @returns {*}
+    * @private
+    */
    _buildPackageHTML(cntr, data)
    {
       let navPackage = 'nav-package';
@@ -138,7 +172,6 @@ export default class EnhancedNavDocBuilder extends DocBuilder
     * Build navigation output.
     *
     * @return {string} HTML navigation output.
-    * @private
     */
    buildNavDoc()
    {
@@ -197,6 +230,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       let fileCntr = 0;
       let packageCntr = 0;
 
+      // If there is local data then loop through the Icecap template `nav-local.html` filling in data.
       if (localData.length > 0)
       {
          iceNavLocal.loop('navGroup', localData, (cntr, group, ice) =>
@@ -223,6 +257,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          iceNav.load('navData', iceNavLocal);
       }
 
+      // If there is managed data then loop through the Icecap template `nav-managed.html` filling in data.
       if (managedData.length > 0)
       {
          iceNavManaged.loop('navGroup', managedData, (cntr, group, ice) =>
@@ -257,6 +292,18 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return iceNav.html;
    }
 
+   /**
+    * Creates the data object representing a file that may contain docs / tags.
+    *
+    * @param {boolean}  checked - Indicates if the accordion menu input item is checked / open.
+    * @param {string}   filePath - File path for the file.
+    * @param {string}   fileName - File name for the file.
+    * @param {string}   baseSCMLink - (Optional) If provided will create the SCM link for the file.
+    * @param {string}   packageLink - (Optional) If provided will create the package manager link for the file.
+    *
+    * @returns {object}
+    * @private
+    */
    _createFileData(checked, filePath, fileName, baseSCMLink, packageLink)
    {
       const file =
@@ -273,6 +320,17 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return file;
    }
 
+   /**
+    * Creates the data object representing a folder that may contain files.
+    *
+    * @param {boolean}  checked - Indicates if the accordion menu input item is checked / open.
+    * @param {string}   dirPath - Directory path for the source folder.
+    * @param {string}   baseSCMLink - (Optional) If provided will create the SCM link for the folder.
+    * @param {string}   packageLink - (Optional) If provided will create the package manager link for the folder.
+    *
+    * @returns {object}
+    * @private
+    */
    _createFolderData(checked, dirPath, baseSCMLink, packageLink)
    {
       const folder =
@@ -288,6 +346,18 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return folder;
    }
 
+   /**
+    * Creates the data object representing a managed package file that may contain docs / tags. Before deferring to
+    * `_createFileData` the local relative path for the file path is replaced.
+    *
+    * @param {boolean}  checked - Indicates if the accordion menu input item is checked / open.
+    * @param {string}   filePath - File path for the file.
+    * @param {string}   fileName - File name for the file.
+    * @param {object}   packageData - Associated managed package data.
+    *
+    * @returns {object}
+    * @private
+    */
    _createPackageFileData(checked, filePath, fileName, packageData)
    {
       const packagePath = filePath.replace(`${packageData.relativePath}${path.sep}`, '');
@@ -299,6 +369,16 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return file;
    }
 
+   /**
+    * Creates the data object representing a folder for a managed package that may contain files.
+    *
+    * @param {boolean}  checked - Indicates if the accordion menu input item is checked / open.
+    * @param {string}   dirPath - Directory path for the source folder.
+    * @param {object}   packageData - Associated managed package data.
+    *
+    * @returns {object}
+    * @private
+    */
    _createPackageFolderData(checked, dirPath, packageData)
    {
       const packagePath = dirPath.replace(`${packageData.relativePath}${path.sep}`, '');
@@ -310,6 +390,15 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return folder;
    }
 
+   /**
+    * Creates the data object representing a managed package that may contain folders.
+    *
+    * @param {boolean}  checked - Indicates if the accordion menu input item is checked / open.
+    * @param {object}   data - Associated managed package data.
+    *
+    * @returns {object}
+    * @private
+    */
    _createPackageData(checked, data)
    {
       const packageData =
@@ -329,6 +418,17 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return packageData;
    }
 
+   /**
+    * Creates a link to a source code management system given a base link, path and potentially a line number.
+    * Currently only Github is supported, but other SCM systems can be added upon request.
+    *
+    * @param {string}   baseSCMLink - The base SCM link for a given repository.
+    * @param {string}   path - Path of folder or file to add to base SCM link.
+    * @param {number}   lineNumber - Line number for the doc / tag being linked.
+    *
+    * @returns {*}
+    * @private
+    */
    _createSCMLink(baseSCMLink, path, lineNumber)
    {
       const scmLink = {};
@@ -358,6 +458,18 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       return scmLink;
    }
 
+   /**
+    * Filters all local source docs and adds created data to `localData`. An array `localDataFilter` may contain
+    * any relative path strings which are filtered out; examples include `jspm_packages` for JSPM managed packages or
+    * `node_modules` for NPM managed packages which are separated from local source.
+    *
+    * @param {Array} allDocs - All docs / tags to parse.
+    * @param {Array} localData - Local data array to populate with local source.
+    * @param {Array} localDataFilter - An array of string prefixes to exclude docs from local source.
+    *
+    * @returns {boolean} - If any docs are processed then true is returned.
+    * @private
+    */
    _filterLocalDocs(allDocs, localData, localDataFilter)
    {
       // Filter local docs
@@ -378,6 +490,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Sort by directory / file name / kind.
       this._sortDocs(localDocs);
 
+      // Create local source group.
       const localGroup =
       {
          checked: true,
@@ -391,7 +504,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
       let currentFile, currentFolder;
 
-      // Set initial values
+      // Set initial values for first file / folder.
       {
          const data = localDocs[0].__navData;
          currentFile = this._createFileData(true, data.filePath, data.fileName, baseRepoLink);
@@ -399,6 +512,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          currentFolder = this._createFolderData(true, data.dirPath, baseRepoLink);
       }
 
+      // Process all local docs associating data for group / folder / file / doc.
       localDocs.forEach((doc) =>
       {
          const data = doc.__navData;
@@ -409,6 +523,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortName = data.shortName;
          const kind = data.kind;
 
+         // If the file name or path differs then create a new current file after pushing the old one to the current
+         // folder.
          if (currentFile.name !== fileName || currentFile.path !== filePath)
          {
             currentFolder.files.push(currentFile);
@@ -416,12 +532,14 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             currentFile.hidden = fileHidden;
          }
 
+         // If the current folder path differs then create a new folder after pushing the old one ot the local group.
          if (currentFolder.path !== dirPath)
          {
             localGroup.folders.push(currentFolder);
             currentFolder = this._createFolderData(true, dirPath, baseRepoLink);
          }
 
+         // Push the doc / tag to the current file.
          currentFile.docs.push(
          {
             type: `nav-kind-${kind}`,
@@ -431,10 +549,24 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          });
       });
 
+      // Final push of last file / folder.
       currentFolder.files.push(currentFile);
       localGroup.folders.push(currentFolder);
+
+      return true;
    }
 
+   /**
+    * Filters all docs that are JSPM managed and adds created data to `managedData`. The `esdoc-plugin-jspm` plugin
+    * adds to all docs / tags associated JSPM package data. Below this data is detected and if so the doc / tag is
+    * processed as JSPM managed.
+    *
+    * @param {Array} allDocs - All docs / tags to parse.
+    * @param {Array} managedData - Managed data array to populate with JSPM sources.
+    *
+    * @returns {boolean} - If any docs are processed then true is returned.
+    * @private
+    */
    _filterJSPMDocs(allDocs, managedData)
    {
       // Filter all docs that have JSPM package data attached
@@ -443,6 +575,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Return early if there are no docs to process.
       if (jspmDocs.length === 0) { return false; }
 
+      // Sort all package docs by package / folder / file name (if not hidden) / tag & kind.
       this._sortPackageDocs(jspmDocs);
 
       const jspmGroup =
@@ -467,6 +600,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          currentFolder = this._createPackageFolderData(true, data.dirPath, currentPackage.packageData);
       }
 
+      // Process all JSPM docs associating data for group / package / folder / file / doc.
       jspmDocs.forEach((doc) =>
       {
          const jspmPackageData = doc.packageData;
@@ -479,6 +613,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortName = data.shortName;
          const kind = data.kind;
 
+         // If the file name or path differs then create a new current file after pushing the old one to the current
+         // folder.
          if (currentFile.name !== fileName || currentFile.originalFilePath !== filePath)
          {
             currentFolder.files.push(currentFile);
@@ -486,6 +622,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
             currentFile.hidden = fileHidden;
          }
 
+         // If the associated package name differs then create a new current package after pushing the old one to
+         // the JSPM group.
          if (currentPackage.packageName !== jspmPackageData.packageName)
          {
             currentPackage.folders.push(currentFolder);
@@ -500,6 +638,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          }
          else
          {
+            // Process the next folder in the current package.
             if (currentFolder.originalDirPath !== dirPath)
             {
                currentPackage.folders.push(currentFolder);
@@ -509,6 +648,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
 
          const packageFilePath = filePath.replace(`${currentPackage.packageData.relativePath}${path.sep}`, '');
 
+         // Push the doc / tag to the current file.
          currentFile.docs.push(
          {
             type: `nav-kind-${kind}`,
@@ -518,6 +658,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          });
       });
 
+      // Final push of last file / folder / package.
       currentFolder.files.push(currentFile);
       currentPackage.folders.push(currentFolder);
 
@@ -562,10 +703,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
     * Parses the repo URL from `package.json` and determines repo type and base link. Currently only Github URLs
     * are supported.
     *
-    * If no SCM match is available or repo URL is missing from `package.json` then `null` is returned otherwise
+    * If no SCM match is available or repo URL is missing from `package.json` then `undefined` is returned otherwise
     * an object hash containing repo `type` and the base `link` are returned.
     *
-    * @returns {null|{}}
+    * @returns {undefined|{}}
     * @private
     */
    _getLocalRepoUrl()
@@ -608,7 +749,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
    }
 
    /**
-    * Sort by directory / file name / doc short name / kind.
+    * Sort by directory / file name / doc short name / kind. If `fileHidden` is true for both docs then the file is
+    * not used in sorting as the source folder has all default exports which match the file name.
     *
     * @param {Array}    docs - The ESDoc docs / tags to sort.
     *
@@ -658,7 +800,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
    }
 
    /**
-    * Sort by package name / directory / file name / doc short name / kind.
+    * Sort by package name / directory / file name / doc short name / kind. If `fileHidden` is true for both docs then
+    * the file is not used in sorting as the source folder has all default exports which match the file name.
     *
     * @param {Array}    docs - The ESDoc docs / tags to sort.
     *
