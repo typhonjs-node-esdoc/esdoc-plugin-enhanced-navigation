@@ -1,5 +1,98 @@
 /**
- * esdoc-plugin-enhanced-navigation -- In development...
+ * esdoc-plugin-enhanced-navigation -- A plugin for [ESDoc](https://esdoc.org) that replaces the left-hand navigation /
+ * class browser with an enhanced version which includes a folder accordion, a context menu that opens associated
+ * Github / NPM links and support for grouping managed packages via JSPM (and soon NPM) in separate sections from the
+ * local source.
+ *
+ * Installation steps:
+ * - Install `esdoc` in `devDependencies` in `package.json`.
+ * - Install `esdoc-plugin-enhanced-navigation` in `devDependencies` in `package.json`.
+ * - Optionally install [esdoc-plugin-jspm](https://www.npmjs.com/package/esdoc-plugin-jspm) if using JSPM / SystemJS in
+ *   `devDependencies` in `package.json`.
+ * - Create an `.esdocrc` or `esdoc.json` configuration file adding the plugin.
+ * - Optionally add an `.esdocrc` or `esdoc.json` configuration file in all JSPM managed packages to link.
+ * - Run ESdoc then profit!
+ *
+ * For more information view the [ESDoc tutorial](https://esdoc.org/tutorial.html) and
+ * [ESDoc Config](https://esdoc.org/config.html) documentation.
+ *
+ * It should be noted that all TyphonJS repos now are standardizing on `.esdocrc` for the ESDoc configuration file. Both
+ * `.esdocrc` and `esdoc.json` are supported by the `esdoc-plugin-jspm` and forthcoming `esdoc-plugin-npm` plugin.
+ *
+ * As an alternate and the preferred all inclusive installation process please see
+ * [typhonjs-npm-build-test](https://www.npmjs.com/package/typhonjs-npm-build-test) for a NPM package which contains
+ * several dependencies for building / testing ES6 NPM modules including ESDoc generation with the following plugins
+ * including [esdoc-plugin-jspm](https://www.npmjs.com/package/esdoc-plugin-jspm),
+ * [esdoc-plugin-extends-replace](https://www.npmjs.com/package/esdoc-plugin-extends-replace).
+ * Please note that the next release of `typhonjs-npm-build-test` will include `esdoc-plugin-enhanced-navigation` and
+ * presently it is not included. When `esdoc-plugin-enhanced-navigation` reaches `0.1.0` it will be included in
+ * `typhonjs-npm-build-test` version `0.2.0`.
+ *
+ * Additionally [typhonjs-core-gulptasks](https://www.npmjs.com/package/typhonjs-core-gulptasks) provides a NPM package
+ * which contains several pre-defined Gulp tasks for working with JSPM / SystemJS, ESLint and ESDoc generation.
+ *
+ * For the latest significant changes please see the
+ * [CHANGELOG](https://github.com/typhonjs-node-esdoc/esdoc-plugin-enhanced-navigation/blob/master/CHANGELOG.md).
+ *
+ * If installing and working directly with `esdoc-plugin-enhanced-navigation` the following is an example integration
+ * including JSPM support via `esdoc-plugin-jspm` for `package.json`:
+ * ```
+ * {
+ *   ...
+ *
+ *   "devDependencies": {
+ *     "esdoc": "^0.4.0",
+ *     "esdoc-plugin-enhanced-navigation": "^0.0.6",
+ *     "esdoc-plugin-jspm": "^0.6.0",  // Optional if using JSPM
+ *     "jspm": "^0.16.0"
+ *   },
+ *   "scripts": {
+ *     "esdoc": "esdoc -c .esdocrc"
+ *   },
+ *   "jspm": {
+ *     "main": "<main entry point>",
+ *     "dependencies": {
+ *       ...
+ *     },
+ *      "devDependencies": {
+ *       ...
+ *     }
+ *   }
+ * }
+ * ```
+ *
+ * And the `.esdocrc` or `esdoc.json` configuration file:
+ *
+ * ```
+ * {
+ *    "title": "<title>",
+ *    "source": "src",
+ *    "destination": "docs",
+ *    "plugins":
+ *    [
+ *       { "name": "esdoc-plugin-jspm" },  // Optional if using JSPM
+ *       {
+ *          "name": "esdoc-plugin-enhanced-navigation",
+ *          "option:
+ *          {
+ *             "showAllFiles": "true"  // (Optional) If set to true then all doc tags will show the associated file
+ *                                     // name; default is false.
+ *          }
+ *       }
+ *    ]
+ * }
+ * ```
+ *
+ * `esdoc-plugin-enhanced-navigation` accepts the following configuration option:
+ * - showAllFiles - If set to true then all doc tags will show the associated file name; default is false.
+ *
+ * By default for folders where all files export a single default or named export which matches the file name then the
+ * file name for this single export is hidden. This is useful for efforts like TyphonJS which has a strict naming policy
+ * where each file only has a default export which matches the file name.
+ *
+ * ------
+ *
+ * Given the NPM script defined in `package.json` then simply run `npm run esdoc`.
  */
 
 'use strict';

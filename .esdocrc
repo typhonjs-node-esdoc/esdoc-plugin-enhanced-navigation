@@ -1,5 +1,5 @@
 {
-   "title": "esdoc-plugin-jspm",
+   "title": "esdoc-plugin-enhanced-navigation",
    "source": "src",
    "destination": "docs",
    "manual": { "changelog": ["./CHANGELOG.md"] }

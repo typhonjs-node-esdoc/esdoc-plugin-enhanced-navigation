@@ -24,6 +24,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
    {
       super(data, config);
 
+      /**
+       * Stores the plugin options.
+       * @type {object}
+       */
       this.options = options;
    }
 
