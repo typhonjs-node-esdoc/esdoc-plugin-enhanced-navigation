@@ -21,7 +21,7 @@ Installation steps:
 
 For more information view the [ESDoc tutorial](https://esdoc.org/tutorial.html) and [ESDoc Config](https://esdoc.org/config.html) documentation.
 
-It should be noted that all TyphonJS repos now are standardizing on `.esdocrc` for the ESDoc configuration file. Both `.esdocrc` and `esdoc.json` are supported by this plugin. 
+It should be noted that all TyphonJS repos now are standardizing on `.esdocrc` for the ESDoc configuration file. Both `.esdocrc` and `esdoc.json` are supported by the `esdoc-plugin-jspm` and forthcoming `esdoc-plugin-npm` plugin. 
 
 As an alternate and the preferred all inclusive installation process please see [typhonjs-npm-build-test](https://www.npmjs.com/package/typhonjs-npm-build-test) for a NPM package which contains several dependencies for building / testing ES6 NPM modules including ESDoc generation with the following plugins including [esdoc-plugin-jspm](https://www.npmjs.com/package/esdoc-plugin-jspm), [esdoc-plugin-extends-replace](https://www.npmjs.com/package/esdoc-plugin-extends-replace). 
 Please note that the next release of `typhonjs-npm-build-test` will include `esdoc-plugin-enhanced-navigation` and presently it is not included. When `esdoc-plugin-enhanced-navigation` reaches `0.1.0` it will be included in `typhonjs-npm-build-test` version `0.2.0`.
@@ -37,7 +37,7 @@ If installing and working directly with `esdoc-plugin-enhanced-navigation` the f
 
   "devDependencies": {
     "esdoc": "^0.4.0",
-    "esdoc-plugin-enhanced-navigation": "^0.0.5",  
+    "esdoc-plugin-enhanced-navigation": "^0.0.6",  
     "esdoc-plugin-jspm": "^0.6.0",  // Optional if using JSPM
     "jspm": "^0.16.0"
   },
@@ -66,15 +66,28 @@ And the `.esdocrc` or `esdoc.json` configuration file:
    "plugins": 
    [ 
       { "name": "esdoc-plugin-jspm" },  // Optional if using JSPM
-      { "name": "esdoc-plugin-enhanced-navigation" }
+      { 
+         "name": "esdoc-plugin-enhanced-navigation",
+         "option:
+         {
+            "showAllFiles": "true"  // (Optional) If set to true then all doc tags will show the associated file name; default is false.
+         }
+      }
    ]
 }
 ```
+
+`esdoc-plugin-enhanced-navigation` accepts the following configuration option:
+- showAllFiles - If set to true then all doc tags will show the associated file name; default is false. 
+
+By default for folders where all files export a single default or named export which matches the file name then the file name for this single export is hidden. This is useful for efforts like TyphonJS which has a strict naming policy where each file only has a default export which matches the file name. 
+
+------
 
 Given the NPM script defined in `package.json` then simply run `npm run esdoc`.
 
 ------
 
-Below is a demo image of the replaced left-hand navigation. A few of the pertinent details include that the local source is grouped at the top section with any JSPM / NPM managed source code grouped in follow up sections. While not pictured a context click on folders and source code opens a context menu which will provide links to Github or NPM depending on the code being managed. For the context menu links to work for NPM packages you must include the [repository field](https://docs.npmjs.com/files/package.json#repository) in `package.json`. JSPM currently supports packages from Github and NPM; Github packages are colored orange and NPM packages are colored light red. Aliased JSPM packages where the assigned name does not match the package name the package / folder uses italic styling with the aliased name followed by the actual package name in parentheses. 
+Below is a demo image of the replaced left-hand navigation. A few of the pertinent details include that the local source is grouped at the top section with any JSPM / NPM managed source code grouped in follow up sections. For folders where all files export a single default or named export which matches the file name the file name is omitted. While not pictured a context click on folders and source code opens a context menu which will provide links to Github or NPM depending on the code being managed. For the context menu links to work for NPM packages you must include the [repository field](https://docs.npmjs.com/files/package.json#repository) in `package.json`. JSPM currently supports packages from Github and NPM; Github packages are colored orange and NPM packages are colored light red. Aliased JSPM packages where the assigned name does not match the package name the package / folder uses italic styling with the aliased name followed by the actual package name in parentheses. 
 
-![esdoc-plugin-enhanced-navigation demo](https://i.imgur.com/OjpD7rl.png)
+![esdoc-plugin-enhanced-navigation demo](https://i.imgur.com/JBgVSKZ.png)
