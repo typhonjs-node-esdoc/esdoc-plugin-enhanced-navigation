@@ -11,7 +11,7 @@ import { taffy }              from 'taffydb';
 
 import EnhancedNavDocBuilder  from './EnhancedNavDocBuilder.js';
 
-let option;
+let options;
 
 // Must store ESDoc configuration file to use later with EnhancedNavDocBuilder.
 let config, navHTML;
@@ -25,8 +25,9 @@ let config, navHTML;
  */
 export function onStart(ev)
 {
-   option = ev.data.option || {};
-   option.silent = option.silent || false;
+   options = ev.data.option || {};
+   options.showAllFiles = typeof options.showAllFiles === 'boolean' ? options.showAllFiles : false;
+   options.silent = typeof options.silent === 'boolean' ? options.silent : false;
 }
 
 /**
@@ -50,7 +51,7 @@ export function onHandleConfig(ev)
  */
 export function onHandleTag(ev)
 {
-   navHTML = new EnhancedNavDocBuilder(taffy(ev.data.tag), config).buildNavDoc();
+   navHTML = new EnhancedNavDocBuilder(taffy(ev.data.tag), config, options).buildNavDoc();
    navHTML = navHTML.replace('data-nav-id=""', `data-nav-id="docs-nav-id-${Date.now()}"`);
 }
 

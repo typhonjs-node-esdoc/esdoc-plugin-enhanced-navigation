@@ -15,6 +15,20 @@ const s_KIND_ORDER = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3,
  */
 export default class EnhancedNavDocBuilder extends DocBuilder
 {
+   /**
+    * Create instance.
+    *
+    * @param {object} data - Taffy / doc object database.
+    * @param {object} config - ESDoc config is used build output.
+    * @param {object} options - Sanitized plugin options.
+    */
+   constructor(data, config, options)
+   {
+      super(data, config);
+
+      this.options = options;
+   }
+
    _buildDocLinkHTML(doc)
    {
       let packageLink = '';
@@ -137,6 +151,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       const kinds = ['class', 'function', 'variable', 'typedef', 'external'];
       const allDocs = this._find({ kind: kinds }).filter((v) => !v.builtinExternal);
 
+      const dirPathNonDefaultMap = {};
+
       // Add more data for each doc.
       allDocs.forEach((doc) =>
       {
@@ -146,8 +162,25 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortName = doc.longname.split('~')[1];
          const kind = doc.interface ? 'interface' : doc.kind;
 
-         doc.__navData = { dirPath, fileName, filePath, kind, shortName };
+         const exportMatchesFileName = path.parse(filePath).name === shortName;
+
+         // If the short name doesn't match the the name of the file then designate the directory as containing
+         // non-default exports.
+         if (!exportMatchesFileName) { dirPathNonDefaultMap[dirPath] = true; }
+
+         doc.__navData = { dirPath, exportMatchesFileName, fileName, filePath, kind, shortName };
       });
+
+      // Potentially take a second pass through all docs to set fileHidden based on whether there are only default
+      // exports that match the shortName and fileName without extension. In the case when there is one export that
+      // matches the file name then the associated file is hidden.
+      if (!this.options.showAllFiles)
+      {
+         allDocs.forEach((doc) =>
+         {
+            doc.__navData.fileHidden = !(typeof dirPathNonDefaultMap[doc.__navData.dirPath] === 'boolean');
+         });
+      }
 
       const localData = [];
       const localDataFilter = [];
@@ -234,6 +267,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       {
          checked,
          name: fileName,
+         path: filePath,
          docs: []
       };
 
@@ -364,23 +398,26 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Set initial values
       {
          const data = localDocs[0].__navData;
-         currentFile = this._createFileData(true, data.filePath, data.fileName, baseRepoLink);
+         currentFile = this._createFileData(true, data.dirPath, data.fileName, baseRepoLink);
+         currentFile.hidden = data.fileHidden;
          currentFolder = this._createFolderData(true, data.dirPath, baseRepoLink);
       }
 
       localDocs.forEach((doc) =>
       {
          const data = doc.__navData;
+         const fileHidden = data.fileHidden;
          const fileName = data.fileName;
          const filePath = data.filePath;
          const dirPath = data.dirPath;
          const shortName = data.shortName;
          const kind = data.kind;
 
-         if (currentFile.name !== fileName)
+         if (currentFile.name !== fileName || currentFile.path !== dirPath)
          {
             currentFolder.files.push(currentFile);
             currentFile = this._createFileData(true, dirPath, fileName, baseRepoLink);
+            currentFile.hidden = fileHidden;
          }
 
          if (currentFolder.path !== dirPath)
@@ -430,6 +467,7 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const data = jspmDocs[0].__navData;
 
          currentFile = this._createPackageFileData(true, data.filePath, data.fileName, currentPackage.packageData);
+         currentFile.hidden = data.fileHidden;
          currentFolder = this._createPackageFolderData(true, data.dirPath, currentPackage.packageData);
       }
 
@@ -438,16 +476,18 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const jspmPackageData = doc.packageData;
 
          const data = doc.__navData;
+         const fileHidden = data.fileHidden;
          const fileName = data.fileName;
          const filePath = data.filePath;
          const dirPath = data.dirPath;
          const shortName = data.shortName;
          const kind = data.kind;
 
-         if (currentFile.name !== fileName)
+         if (currentFile.name !== fileName || currentFile.originalDirPath !== filePath)
          {
             currentFolder.files.push(currentFile);
             currentFile = this._createPackageFileData(true, filePath, fileName, jspmPackageData);
+            currentFile.hidden = fileHidden;
          }
 
          if (currentPackage.packageName !== jspmPackageData.packageName)
@@ -575,11 +615,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
     * Sort by directory / file name / doc short name / kind.
     *
     * @param {Array}    docs - The ESDoc docs / tags to sort.
-    * @param {boolean}  filesHidden - (Optional) if true then file names are excluded from sorting.
     *
     * @private
     */
-   _sortDocs(docs, filesHidden = false)
+   _sortDocs(docs)
    {
       docs.sort((a, b) =>
       {
@@ -591,6 +630,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortNameB = b.__navData.shortName.toLocaleLowerCase();
          const kindA = a.__navData.kind;
          const kindB = b.__navData.kind;
+
+         const filesHidden = a.__navData.fileHidden && b.__navData.fileHidden;
 
          if (dirPathA === dirPathB)
          {
@@ -624,11 +665,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
     * Sort by package name / directory / file name / doc short name / kind.
     *
     * @param {Array}    docs - The ESDoc docs / tags to sort.
-    * @param {boolean}  filesHidden - (Optional) if true then file names are excluded from sorting.
     *
     * @private
     */
-   _sortPackageDocs(docs, filesHidden = false)
+   _sortPackageDocs(docs)
    {
       // Sort by JSPM package name (potentially aliased), directory path, file name, doc name and kind.
       docs.sort((a, b) =>
@@ -645,6 +685,8 @@ export default class EnhancedNavDocBuilder extends DocBuilder
          const shortNameB = b.__navData.shortName.toLocaleLowerCase();
          const kindA = a.__navData.kind;
          const kindB = b.__navData.kind;
+
+         const filesHidden = a.__navData.fileHidden && b.__navData.fileHidden;
 
          if (packageNameA === packageNameB)
          {
