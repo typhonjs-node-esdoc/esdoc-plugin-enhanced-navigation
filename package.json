@@ -1,8 +1,8 @@
 {
   "name": "esdoc-plugin-enhanced-navigation",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "homepage": "https://github.com/typhonjs-node-esdoc/esdoc-plugin-enhanced-navigation/",
-  "description": "Replaces the standard ESDoc left hand source navigation with an enhanced version.",
+  "description": "Replaces the standard ESDoc left-hand source navigation with an enhanced version.",
   "license": "MPL-2.0",
   "author": {
     "name": "Mike Leahy"
@@ -26,8 +26,7 @@
   "jspm": {
     "directories": {},
     "dependencies": {
-      "backbone": "github:typhonjs-backbone-parse/backbone-parse-es6@master",
-      "underscore": "npm:underscore@^1.8.3"
+      "backbone": "github:typhonjs-backbone-parse/backbone-parse-es6@master"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.0",
