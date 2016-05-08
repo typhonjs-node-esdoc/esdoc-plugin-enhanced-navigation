@@ -6,8 +6,6 @@ import path       from 'path';
 import IceCap     from 'ice-cap';
 import DocBuilder from 'esdoc/out/src/Publisher/Builder/DocBuilder.js';
 
-// import TestData   from './TestData.js';
-
 const s_KIND_ORDER = { 'class': 0, 'interface': 1, 'function': 2, 'variable': 3, 'typedef': 4, 'external': 5 };
 
 /**
@@ -193,8 +191,6 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // if (this._filterNPMDocs(allDocs, managedData)) { localDataFilter.push('node_modules'); }
 
       this._filterLocalDocs(allDocs, localData, localDataFilter);
-
-//      TestData.populate(localData, managedData);
 
       let groupCntr = 0;
       let folderCntr = 0;
