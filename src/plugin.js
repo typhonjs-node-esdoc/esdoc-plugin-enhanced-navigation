@@ -221,5 +221,5 @@ const s_COPY_FILES = (docDestination) =>
    const sourcePath = path.resolve(__dirname, '../template/copy');
    const targetPath = path.resolve(process.cwd(), docDestination);
 
-   fs.copySync(sourcePath, targetPath, { clobber: false });
+   fs.copySync(sourcePath, targetPath, { clobber: true });
 };
