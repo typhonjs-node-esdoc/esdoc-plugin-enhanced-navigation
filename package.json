@@ -29,9 +29,9 @@
       "backbone": "github:typhonjs-backbone-parse/backbone-parse-es6@master"
     },
     "devDependencies": {
-      "babel": "npm:babel-core@^5.8.0",
-      "babel-runtime": "npm:babel-runtime@^5.8.0",
-      "core-js": "npm:core-js@^1.2.0"
+      "babel": "npm:babel-core@^5.0.0",
+      "babel-runtime": "npm:babel-runtime@^5.0.0",
+      "core-js": "npm:core-js@^1.0.0"
     }
   },
   "typhonjs": {
