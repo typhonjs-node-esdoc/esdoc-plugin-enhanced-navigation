@@ -17,8 +17,7 @@
       "email": "support@typhonjs.io"
     }
   ],
-  "dependencies":
-  {
+  "dependencies": {
     "cheerio": "^0.20.0",
     "fs-extra": "^0.30.0",
     "ice-cap": "^0.0.4",
