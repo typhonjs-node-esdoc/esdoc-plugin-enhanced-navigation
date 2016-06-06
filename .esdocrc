@@ -2,5 +2,6 @@
    "title": "esdoc-plugin-enhanced-navigation",
    "source": "src",
    "destination": "docs",
+   "plugins": [{ "name": "./dist/plugin.js" }],
    "manual": { "changelog": ["./CHANGELOG.md"] }
 }

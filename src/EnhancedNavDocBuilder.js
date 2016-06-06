@@ -191,7 +191,10 @@ export default class EnhancedNavDocBuilder extends DocBuilder
       // Add more data for each doc.
       allDocs.forEach((doc) =>
       {
-         const filePath = doc.longname.split('~')[0].replace(/^.*?[/]/, '');
+         // Take into consideration the local path relative to the root if configuration source isn't the root path.
+         const localPath = this._config.source !== '.' ? `${this._config.source}${path.sep}` : '';
+
+         const filePath = `${localPath}${doc.longname.split('~')[0].replace(/^.*?[/]/, '')}`;
          const dirPath = path.dirname(filePath);
          const fileName = path.basename(filePath);
          const shortName = doc.longname.split('~')[1];
