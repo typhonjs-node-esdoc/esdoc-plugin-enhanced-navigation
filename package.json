@@ -26,7 +26,7 @@
   "devDependencies": {
     "jspm": "^0.16.0",
     "typhonjs-config-eslint": "^0.4.0",
-    "typhonjs-npm-build-test": "^0.1.0"
+    "typhonjs-npm-build-test": "^0.3.0"
   },
   "jspm": {
     "directories": {},
