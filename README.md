@@ -23,8 +23,7 @@ For more information view the [ESDoc tutorial](https://esdoc.org/tutorial.html) 
 
 It should be noted that all TyphonJS repos now are standardizing on `.esdocrc` for the ESDoc configuration file. Both `.esdocrc` and `esdoc.json` are supported by the `esdoc-plugin-jspm` and forthcoming `esdoc-plugin-npm` plugin. 
 
-As an alternate and the preferred all inclusive installation process please see [typhonjs-npm-build-test](https://www.npmjs.com/package/typhonjs-npm-build-test) for a NPM package which contains several dependencies for building / testing ES6 NPM modules including ESDoc generation with the following plugins including [esdoc-plugin-jspm](https://www.npmjs.com/package/esdoc-plugin-jspm), [esdoc-plugin-extends-replace](https://www.npmjs.com/package/esdoc-plugin-extends-replace). 
-Please note that the next release of `typhonjs-npm-build-test` will include `esdoc-plugin-enhanced-navigation` and presently it is not included. When `esdoc-plugin-enhanced-navigation` reaches `0.1.0` it will be included in `typhonjs-npm-build-test` version `0.2.0`.
+As an alternate and the preferred all inclusive toolchain please see [typhonjs-npm-build-test](https://www.npmjs.com/package/typhonjs-npm-build-test) for a NPM package which contains several dependencies for building / testing ES6 NPM modules including all [TyphonJS ESDoc plugins](https://github.com/typhonjs-node-esdoc). A separate package only containing the TyphonJS ESDoc plugins is also available: [typhonjs-node-esdoc](https://www.npmjs.com/package/typhonjs-node-esdoc)
 
 Additionally [typhonjs-core-gulptasks](https://www.npmjs.com/package/typhonjs-core-gulptasks) provides a NPM package which contains several pre-defined Gulp tasks for working with JSPM / SystemJS, ESLint and ESDoc generation. 
 
@@ -37,9 +36,9 @@ If installing and working directly with `esdoc-plugin-enhanced-navigation` the f
 
   "devDependencies": {
     "esdoc": "^0.4.0",
-    "esdoc-plugin-enhanced-navigation": "^0.0.7",  
+    "esdoc-plugin-enhanced-navigation": "^0.1.0",  
     "esdoc-plugin-jspm": "^0.6.0",  // Optional if using JSPM
-    "jspm": "^0.16.0"
+    "jspm": "^0.16.0"               // Optional if using JSPM
   },
   "scripts": {
     "esdoc": "esdoc -c .esdocrc"
